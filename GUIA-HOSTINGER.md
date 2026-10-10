@@ -10,15 +10,32 @@ Na Hostinger isso corresponde ao plano com **hospedagem Node.js** + **MySQL**.
 No hPanel:
 
 1. **Bancos de Dados MySQL** → *Criar novo banco* (ex.: `u123456_falabrincando`).
-2. Crie um usuário MySQL e anote **host, usuário, senha e porta** (a porta costuma ser `3306`).
-3. Guarde esses dados para o passo 3.
+2. Crie um usuário MySQL com acesso a esse banco e anote **host, usuário, senha e porta**
+   (a porta costuma ser `3306`).
+3. Guarde esses dados — eles serão usados nas variáveis de ambiente do passo 3.
 
-Para criar as tabelas, use **phpMyAdmin → Importar** com:
+### Criar as tabelas (phpMyAdmin)
 
-- `db/schema.sql`
-- `db/seed.sql` *(opcional — só para a demonstração)*
+> ⚠️ Use os arquivos `db/schema.hostinger.sql` e `db/seed.hostinger.sql`.
+> Eles são idênticos aos originais, **sem `CREATE DATABASE` / `USE`**, porque a Hostinger
+> não permite que o usuário crie bancos. O nome do banco vem da seleção no topo do phpMyAdmin.
 
-Alternativamente, no terminal da aplicação:
+1. Abra o **phpMyAdmin** e **selecione o banco criado no passo 1** (menu suspenso no topo).
+2. Aba **Importar** → envie `db/schema.hostinger.sql` → **Executar**.
+3. Aba **Importar** → envie `db/seed.hostinger.sql` → **Executar** *(opcional: só os dados
+   fictícios de demonstração)*.
+
+Resultado esperado: **14 tabelas** e, com o seed, 2 usuários, 2 pacientes, 5 fonemas,
+7 etapas de plano e 6 atividades.
+
+Para conferir no phpMyAdmin → aba **SQL**, rode:
+
+```sql
+SHOW TABLES;
+SELECT COUNT(*) FROM phonemes;
+```
+
+### Alternativa por linha de comando
 
 ```bash
 DB_HOST=... DB_USER=... DB_PASSWORD=... DB_NAME=... npm run db:seed
