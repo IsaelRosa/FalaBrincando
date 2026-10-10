@@ -6,7 +6,7 @@
   "description": "API FalaBrincando — Terapia da Fala em Casa",
   "scripts": {
     "dev": "tsx watch src/index.ts",
-    "build": "tsc -p tsconfig.json",
+    "build": "tsc -p tsconfig.server.json",
     "build:web": "cd web && npm install && npm run build && cd ..",
     "build:all": "npm run build && npm run build:web",
     "start": "node dist/index.js",
