@@ -8,8 +8,8 @@
 -- ============================================================
 
 INSERT IGNORE INTO users (id, email, password_hash, role, display_name, phone) VALUES
- (1,'demo@falabrincando.app','$2a$10$PLACEHOLDER_HASH','fono','Dra. Demonstração (fictícia)','(11) 90000-0000'),
- (2,'responsavel@falabrincando.app','$2a$10$PLACEHOLDER_HASH','responsavel','Responsável Demonstração','(11) 90000-0001');
+ (1,'demo@falabrincando.app','$2b$10$DZyDQUlNePIY3PBQQu8CZeWzYdODHVM0t2Tqi2k9L0z2uQfH5sDu.','fono','Dra. Demonstração (fictícia)','(11) 90000-0000'),
+ (2,'responsavel@falabrincando.app','$2b$10$DZyDQUlNePIY3PBQQu8CZeWzYdODHVM0t2Tqi2k9L0z2uQfH5sDu.','responsavel','Responsável Demonstração','(11) 90000-0001');
 
 INSERT IGNORE INTO patients (id, owner_fono_id, nome, apelido, birth_date, anonymized, notes_general, consent_at, consent_by, voice_consent_at, voice_consent_by) VALUES
  (1,1,'Criança Demonstração Alfa','Alfa','2019-04-12',1,'Dados fictícios para demonstração. Fonema-alvo S.', NOW(),'Responsável Demonstração', NULL, NULL),

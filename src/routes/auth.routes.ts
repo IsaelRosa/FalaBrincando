@@ -20,7 +20,20 @@ authRouter.post('/login', async (req, res) => {
     'SELECT id,email,password_hash,role,display_name FROM users WHERE email = ? LIMIT 1',
     [email.toLowerCase()]
   );
-  if (!user) return res.status(401).json({ error: 'E-mail ou senha incorretos.' });
+  if (!user) {
+    // Mensagem útil quando o banco está vazio (seed não importado).
+    const total = await one<{ n: number }>('SELECT COUNT(*) AS n FROM users');
+    if ((total?.n ?? 0) === 0) {
+      return res.status(401).json({
+        error:
+          'Nenhum usuário cadastrado neste banco. No terminal da hospedagem rode: npm run db:users ' +
+          '(ou importe db/seed.hostinger.sql pelo phpMyAdmin).',
+      });
+    }
+    return res.status(401).json({
+      error: 'Não existe uma conta com este e-mail. Verifique o endereço ou peça um cadastro à fonoaudióloga.',
+    });
+  }
 
   const ok = await bcrypt.compare(password, user.password_hash);
   if (!ok) return res.status(401).json({ error: 'E-mail ou senha incorretos.' });
