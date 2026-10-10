@@ -3,6 +3,7 @@ import cors from 'cors';
 import path from 'node:path';
 import fs from 'node:fs';
 import { env } from './config.js';
+import { friendlyDbError, q } from './db.js';
 import { authRouter } from './routes/auth.routes.js';
 import { patientRouter } from './routes/patients.routes.js';
 import { phonemeRouter } from './routes/phonemes.routes.js';
@@ -14,7 +15,15 @@ const app = express();
 app.use(cors({ origin: env.corsOrigin === '*' ? true : env.corsOrigin.split(',') }));
 app.use(express.json({ limit: '5mb' }));
 
-app.get('/api/health', (_req, res) => res.json({ ok: true, app: 'FalaBrincando', ts: new Date().toISOString() }));
+app.get('/api/health', async (_req, res) => {
+  const base = { app: 'FalaBrincando', ts: new Date().toISOString() };
+  try {
+    await q('SELECT 1');
+    res.json({ ...base, ok: true, db: 'conectado' });
+  } catch (err: any) {
+    res.status(503).json({ ...base, ok: false, db: friendlyDbError(err), code: err?.code ?? null });
+  }
+});
 
 app.use('/api/auth', authRouter);
 app.use('/api/patients', patientRouter);
@@ -33,7 +42,10 @@ if (fs.existsSync(webDist)) {
 
 app.use((err: any, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
   console.error(err);
-  res.status(err.status ?? 500).json({ error: err.message ?? 'Erro interno' });
+  const isDb = err?.code && String(err.code).length >= 5;
+  res.status(err.status ?? 500).json({
+    error: isDb ? friendlyDbError(err) : err.message ?? 'Erro interno',
+  });
 });
 
 app.listen(env.port, () => {
