@@ -124,6 +124,26 @@ async function main() {
   );
   console.log('✔ novos tipos de jogo');
 
+  // Backfill: activities created before Phase 2 inherit the skill from the
+  // library entry with the same game_key, so indicators don't show "unclassified".
+  const [porJogo] = await conn.query(
+    `SELECT game_key, MIN(habilidade) AS habilidade
+     FROM activity_library GROUP BY game_key`
+  );
+  const mapa = new Map<string, any>((porJogo as any[]).map((r: any) => [r.game_key, r]));
+  let atualizados = 0;
+  for (const [game, info] of mapa) {
+    const [r] = await conn.query(
+      `UPDATE activity_plans SET habilidade = ?,
+         objetivo = COALESCE(objetivo, (SELECT objetivo FROM activity_library l
+           WHERE l.game_key = ? LIMIT 1))
+       WHERE game_key = ? AND habilidade IS NULL`,
+      [info.habilidade, game, game]
+    );
+    if ((r as any).affectedRows) atualizados += (r as any).affectedRows;
+  }
+  console.log(`✔ ${atualizados} atividade(s) classificada(s) por habilidade`);
+
   await conn.end();
   console.log('\nMigração concluída.\n');
 }

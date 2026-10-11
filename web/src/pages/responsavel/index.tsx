@@ -76,6 +76,7 @@ export function HomeResponsavel() {
           <div className="row">
             <SpeakButton text={fala} label="Ouvir" />
             <Link to="/historico" className="btn ghost">📅 Meu histórico</Link>
+            <Link to={`/acompanhamento/${sel}`} className="btn ghost">📅 Calendário</Link>
           </div>
         </div>
 

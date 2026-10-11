@@ -235,6 +235,30 @@ tr:last-child td { border-bottom: none; }
 .empty { text-align: center; padding: 2.5rem 1rem; color: var(--texto-2); }
 .empty .big { font-size: 3rem; }
 
+/* ---------- Acompanhamento ---------- */
+.calendario {
+  display: grid; grid-template-columns: repeat(7, 1fr); gap: .35rem;
+  margin-top: 1rem; max-width: 460px;
+}
+.cal-dia {
+  aspect-ratio: 1; border-radius: 12px; border: 2px solid var(--borda);
+  background: var(--branco); display: flex; flex-direction: column;
+  align-items: center; justify-content: center; font-weight: 700; font-size: .9rem;
+  position: relative;
+}
+.cal-dia.cab { border: none; background: transparent; color: var(--texto-2); font-size: .75rem; aspect-ratio: auto; padding: .2rem 0; }
+.cal-dia.feito { background: var(--verde-claro); border-color: var(--verde); color: #2c6b2c; }
+.cal-dia.parcial { border-style: dashed; }
+.cal-dia small {
+  position: absolute; bottom: 2px; right: 4px; font-size: .6rem;
+  background: var(--verde); color: #fff; border-radius: 999px; padding: 0 4px;
+}
+
+.barra {
+  height: .9rem; border-radius: 999px; background: var(--lilas);
+  min-width: 8px; margin-top: .3rem;
+}
+
 @media (max-width: 640px) {
   body { font-size: 16px; }
   h1 { font-size: 1.5rem; }

@@ -36,6 +36,7 @@ export function RelatorioDetalhe() {
     <>
       <div className="row between">
         <h1 style={{ margin: 0 }}>📊 {r.patient.apelido || r.patient.nome}</h1>
+        <Link className="btn ghost" to={`/fono/acompanhamento/${patientId}`}>📈 Acompanhamento</Link>
         <button className="btn" onClick={() => window.print()}>🖨️ Exportar / Salvar em PDF</button>
       </div>
       <p className="muted">

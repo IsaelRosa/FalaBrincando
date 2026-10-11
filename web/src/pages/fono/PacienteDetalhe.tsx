@@ -51,6 +51,8 @@ export function PacienteDetalhe() {
         </div>
         <div className="row">
           <Link className="btn ghost" to={`/fono/pacientes/${patientId}/perfil`}>👶 Perfil</Link>
+          <Link className="btn ghost" to={`/fono/pacientes/${patientId}/perfil`}>👶 Perfil</Link>
+          <Link className="btn ghost" to={`/fono/acompanhamento/${patientId}`}>📈 Acompanhamento</Link>
           <Link className="btn ghost" to={`/fono/relatorios/${patientId}`}>📊 Relatório</Link>
         </div>
       </div>

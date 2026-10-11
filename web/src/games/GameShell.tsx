@@ -40,6 +40,7 @@ export function GameShell({ patientId, activityId, onExit, children }: Props & {
   const [started] = useState(Date.now());
   const [done, setDone] = useState(false);
   const [observation, setObservation] = useState('');
+  const [nivelAjuda, setNivelAjuda] = useState<string>('');
 
   useEffect(() => {
     let alive = true;
@@ -77,13 +78,14 @@ export function GameShell({ patientId, activityId, onExit, children }: Props & {
             attempts,
             duration_sec: duration,
             observations: observation || null,
+            child_feedback: nivelAjuda || null,
             stars: reason === 'concluida' ? 1 : 0,
           },
         }).catch(() => {});
       }
       onExit();
     },
-    [sessionId, attempts, started, observation, onExit]
+    [sessionId, attempts, started, observation, nivelAjuda, onExit]
   );
 
   const ctx = useMemo<GameCtx>(
@@ -120,6 +122,21 @@ export function GameShell({ patientId, activityId, onExit, children }: Props & {
           onChange={(e) => setObservation(e.target.value)}
           placeholder="Como foi a tentativa? Alguma dificuldade?"
         />
+      </div>
+      <div className="field" style={{ maxWidth: 520, margin: '0 auto' }}>
+        <label>Como foi desta vez? (sem certo ou errado)</label>
+        <div className="row">
+          {[
+            { v: 'sozinha', n: '💪 Sozinha' },
+            { v: 'com_pistas', n: '💡 Com pistas' },
+            { v: 'com_ajuda', n: '🤝 Com ajuda' },
+          ].map((o) => (
+            <button key={o.v} className={`btn small ${nivelAjuda === o.v ? '' : 'ghost'}`} onClick={() => setNivelAjuda(o.v)}>
+              {o.n}
+            </button>
+          ))}
+        </div>
+        <span className="hint">Serve para a fonoaudióloga acompanhar a evolução. Não conta nota.</span>
       </div>
     </div>
   );
