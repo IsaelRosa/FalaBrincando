@@ -1,5 +1,5 @@
 -- =====================================================================
--- FalaBrincando — BIBLIOTECA COMPLETA DE ATIVIDADES (25 atividades)
+-- FalaBrincando - BIBLIOTECA COMPLETA DE ATIVIDADES (25 atividades)
 -- Todas as habilidades, em arquivo unico.
 --
 -- IMPORTACAO (phpMyAdmin):
@@ -8,8 +8,10 @@
 --   3. Aba Importar > envie este arquivo > Executar
 --
 -- Seguro para reimportar: usa INSERT IGNORE (nao duplica).
--- Dados 100%% ficticios, para demonstracao. A fonoaaudióloga revisa e adapta.
+-- Dados 100% ficticios, apenas para demonstracao.
+-- A fonoaudióloga revisa e adapta antes de usar com pacientes.
 -- =====================================================================
+
 -- ============================================================
 -- FalaBrincando — Biblioteca inicial de atividades (DADOS FICTÍCIOS)
 -- Categorizada por habilidade, faixa etária e nível (escopo §4).
