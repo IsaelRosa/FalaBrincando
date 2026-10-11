@@ -4,6 +4,7 @@ import { api } from '../../lib/api';
 import { Mascote, SettingsBar, SpeakButton } from '../../components/ui';
 import { speech } from '../../lib/speech';
 import { GameShell } from '../../games/GameShell';
+import { GameHost } from '../../games';
 
 const GAME_EMOJI: Record<string, string> = {
   pontaria: '🎯', memoria: '🃏', o_que_e: '🗣️', intruso: '🔍',
@@ -163,28 +164,11 @@ export function Jogar() {
         {activity.instructions && (
           <div className="alert info">📌 <strong>Para o responsável:</strong> {activity.instructions}</div>
         )}
-        <LazyGame activity={activity} onExit={() => nav('/')} />
+        <GameShell patientId={activity.patient_id} activityId={activity.id} onExit={() => nav('/')}>
+          {(ctx: any) => <GameHost activity={activity} ctx={ctx} />}
+        </GameShell>
       </div>
     </div>
-  );
-}
-
-function LazyGame({ activity, onExit }: { activity: any; onExit: () => void }) {
-  const [G, setG] = useState<any>(null);
-  useEffect(() => {
-    import('../../games').then((m) => {
-      setG(() => m.renderGame);
-    });
-  }, []);
-  if (!G) return <p>Carregando o jogo…</p>;
-  return <GameHost activity={activity} render={G} onExit={onExit} />;
-}
-
-function GameHost({ activity, render, onExit }: any) {
-  return (
-    <GameShell patientId={activity.patient_id} activityId={activity.id} onExit={onExit}>
-      {(ctx: any) => render(activity, ctx)}
-    </GameShell>
   );
 }
 

@@ -45,8 +45,16 @@ export function friendlyDbError(err: any): string {
   return err?.message ?? 'Erro desconhecido no banco de dados.';
 }
 
+/**
+ * O mysql2 launcha erro em parâmetros `undefined` ("Bind parameters must not
+ * contain undefined"). Convertemos para `null`, que o SQL trata como NULL.
+ */
+function normalize(params: any[]): any[] {
+  return params.map((p) => (p === undefined ? null : p));
+}
+
 export async function q<T = any>(sql: string, params: any[] = []): Promise<T[]> {
-  const [rows] = await pool.execute(sql, params);
+  const [rows] = await pool.execute(sql, normalize(params));
   return rows as T[];
 }
 
@@ -56,6 +64,6 @@ export async function one<T = any>(sql: string, params: any[] = []): Promise<T |
 }
 
 export async function run(sql: string, params: any[] = []) {
-  const [res] = await pool.execute(sql, params);
+  const [res] = await pool.execute(sql, normalize(params));
   return res as mysql.ResultSetHeader;
 }

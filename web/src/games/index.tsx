@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import type { GameCtx, ActivityPlan } from './GameShell';
 import { speech } from '../lib/speech';
 import { AudioButton, emojiFor } from '../components/ui';
-import type { ReactNode } from 'react';
+import type { ComponentType } from 'react';
 
 /* ============================================================
    1. JOGO DA PONTARIA
@@ -390,7 +390,7 @@ export function Instalacao({ activity, ctx }: { activity: ActivityPlan; ctx: Gam
 /* ============================================================
    REGISTRO DE JOGOS — para adicionar novos jogos sem reescrever o app.
    ============================================================ */
-type GameComponent = (p: { activity: ActivityPlan; ctx: GameCtx }) => ReactNode;
+type GameComponent = ComponentType<{ activity: ActivityPlan; ctx: GameCtx }>;
 
 export const GAME_REGISTRY: Record<string, GameComponent> = {
   pontaria: Pontaria,
@@ -403,7 +403,11 @@ export const GAME_REGISTRY: Record<string, GameComponent> = {
   instalacao: Instalacao,
 };
 
-export function renderGame(activity: ActivityPlan, ctx: GameCtx): ReactNode {
+/**
+ * Renderiza o jogo como componente React (NUNCA chamar a função direto,
+ * senão os hooks quebram: React erro #310).
+ */
+export function GameHost({ activity, ctx }: { activity: ActivityPlan; ctx: GameCtx }) {
   const G = GAME_REGISTRY[activity.game_key];
   if (!G) {
     return (
@@ -413,5 +417,5 @@ export function renderGame(activity: ActivityPlan, ctx: GameCtx): ReactNode {
       </div>
     );
   }
-  return G({ activity, ctx });
+  return <G activity={activity} ctx={ctx} />;
 }
