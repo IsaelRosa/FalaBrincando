@@ -2,6 +2,8 @@ import { BrowserRouter, Navigate, Route, Routes, useParams } from 'react-router-
 import { AuthProvider, useAuth } from './auth/AuthContext';
 import { Layout } from './pages/Layout';
 import { Login } from './pages/Login';
+import { Landing } from './pages/Landing';
+import { CriarConta } from './pages/CriarConta';
 import { FonoHome } from './pages/fono/FonoHome';
 import { PacienteDetalhe } from './pages/fono/PacienteDetalhe';
 import { Fonemas } from './pages/fono/Fonemas';
@@ -19,7 +21,7 @@ function Guard({ children, role }: { children: React.ReactNode; role?: 'fono' | 
   const { user, loading } = useAuth();
   if (loading) return <p className="container">Carregando…</p>;
   if (!user) return <Navigate to="/entrar" replace />;
-  if (role && user.role !== role) return <Navigate to="/" replace />;
+  if (role && user.role !== role) return <Navigate to="/inicio" replace />;
   return <>{children}</>;
 }
 
@@ -40,14 +42,19 @@ function ResponsaveisRoute() {
 }
 
 export default function App() {
+  const { user } = useAuth();
   return (
     <AuthProvider>
       <BrowserRouter>
         <Routes>
           <Route path="/entrar" element={<Login />} />
+          <Route path="/criar-conta" element={<CriarConta />} />
+
+          {/* Página inicial pública */}
+          <Route path="/" element={user ? <Navigate to="/inicio" replace /> : <Landing />} />
 
           {/* Painel do responsável / tela da criança */}
-          <Route path="/" element={<Guard><HomeResponsavel /></Guard>} />
+          <Route path="/inicio" element={<Guard><HomeResponsavel /></Guard>} />
           <Route path="/jogo/:id" element={<Guard><Jogar /></Guard>} />
           <Route path="/historico" element={<Guard><Historico /></Guard>} />
           <Route path="/acompanhamento/:id" element={<Guard><AcompanhamentoFamiliaRoute /></Guard>} />

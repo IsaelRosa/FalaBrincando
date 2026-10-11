@@ -104,40 +104,46 @@ authRouter.post('/login', async (req, res) => {
 });
 
 const registerSchema = z.object({
-  email: z.string().email(),
+  email: z.string().email('Informe um e-mail válido'),
   password: z.string().min(6, 'A senha deve ter ao menos 6 caracteres'),
   display_name: z.string().min(2, 'Informe seu nome'),
+  phone: z.string().optional().nullable(),
   role: z.enum(['fono', 'responsavel']),
-  patient_id: z.coerce.number().int().optional(),
 });
 
+/**
+ * Cadastro público.
+ *
+ * SEGURANÇA: o responsável cria a conta mas NÃO escolhe a criança.
+ * O vínculo é feito só pela fonoaudióloga, na aba Responsáveis.
+ * Assim ninguém consegue se attaching a um paciente de outra pessoa.
+ */
 authRouter.post('/register', async (req, res) => {
   const parsed = registerSchema.safeParse(req.body);
   if (!parsed.success) return res.status(400).json({ error: parsed.error.issues[0].message });
   const data = parsed.data;
 
   const exists = await one('SELECT id FROM users WHERE email = ?', [data.email.toLowerCase()]);
-  if (exists) return res.status(409).json({ error: 'Este e-mail já está cadastrado.' });
+  if (exists)
+    return res.status(409).json({
+      error:
+        'Este e-mail já está cadastrado. Faça login ou peça ajuda à fonoaudióloga.',
+    });
 
   const hash = await bcrypt.hash(data.password, 10);
   const r = await run(
-    'INSERT INTO users (email,password_hash,role,display_name) VALUES (?,?,?,?)',
-    [data.email.toLowerCase(), hash, data.role, data.display_name]
+    'INSERT INTO users (email,password_hash,role,display_name,phone) VALUES (?,?,?,?,?)',
+    [data.email.toLowerCase(), hash, data.role, data.display_name, data.phone ?? null]
   );
 
-  if (data.role === 'responsavel' && data.patient_id) {
-    // Vincula somente se o paciente já existir (convite da fono)
-    const pat = await one('SELECT id FROM patients WHERE id = ?', [data.patient_id]);
-    if (pat) {
-      await run('INSERT IGNORE INTO patient_guardians (patient_id,guardian_id,relation) VALUES (?,?,?)', [
-        data.patient_id,
-        r.insertId,
-        'Responsável',
-      ]);
-    }
-  }
-
-  res.status(201).json({ ok: true, id: r.insertId });
+  res.status(201).json({
+    ok: true,
+    id: r.insertId,
+    msg:
+      data.role === 'responsavel'
+        ? 'Conta criada! Agora aguarde a fonoaudióloga vincular o acesso da sua criança.'
+        : 'Conta criada! Você já pode cadastrar pacientes e montar planos.',
+  });
 });
 
 authRouter.get('/me', requireAuth, async (req, res) => {

@@ -3,6 +3,16 @@
    Paleta suave, botões grandes, tipografia legível.
    ========================================================= */
 :root {
+  /* Landing (público) */
+  --navy: #183b56;
+  --teal: #1b9aaa;
+  --mint: #dff6ef;
+  --coral: #ff8066;
+  --yellow: #ffd166;
+  --cream: #fffaf2;
+  --ink: #254052;
+  --muted: #627783;
+
   --roxo: #7b5ea7;
   --roxo-escuro: #5b448a;
   --lilas: #ede4f9;

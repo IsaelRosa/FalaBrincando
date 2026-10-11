@@ -9,7 +9,7 @@ export function Layout() {
     <div className="app">
       <header className="topbar">
         <div className="container">
-          <NavLink to="/" className="brand">🪶 FalaBrincando</NavLink>
+          <NavLink to="/fono" className="brand">🪶 FalaBrincando</NavLink>
           <nav>
             {user?.role === 'fono' ? (
               <>
@@ -21,7 +21,7 @@ export function Layout() {
               </>
             ) : (
               <>
-                <NavLink to="/" end>Início</NavLink>
+                <NavLink to="/inicio" end>Início</NavLink>
                 <NavLink to="/historico">Histórico</NavLink>
               </>
             )}

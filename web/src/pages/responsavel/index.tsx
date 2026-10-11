@@ -161,14 +161,14 @@ export function Jogar() {
         </div>
         <div className="row">
           <SettingsBar />
-          <button className="btn ghost" onClick={() => nav('/')}>← Sair</button>
+          <button className="btn ghost" onClick={() => nav('/inicio')}>← Sair</button>
         </div>
       </div>
       <div className="container">
         {activity.instructions && (
           <div className="alert info">📌 <strong>Para o responsável:</strong> {activity.instructions}</div>
         )}
-        <GameShell patientId={activity.patient_id} activityId={activity.id} onExit={() => nav('/')}>
+        <GameShell patientId={activity.patient_id} activityId={activity.id} onExit={() => nav('/inicio')}>
           {(ctx: any) => <GameHost activity={activity} ctx={ctx} />}
         </GameShell>
       </div>
@@ -196,7 +196,7 @@ export function Historico() {
     <>
       <div className="row between">
         <div className="row"><Mascote size={46} /><h1 style={{ margin: 0 }}>📅 Histórico e participação</h1></div>
-        <Link to="/" className="btn">← Voltar</Link>
+        <Link to="/inicio" className="btn">← Voltar</Link>
       </div>
 
       {sel && <ConfigLembrete patientId={sel} />}
