@@ -119,7 +119,8 @@ async function main() {
     "('qual_figura','Qual é a Figura?','Identificar objetos a partir de pistas.',12)," +
     "('roleta','Roleta das Palavras','Sortear palavras ou imagens para praticar.',13)," +
     "('missoes','Missões da Comunicação','Resolver situações cotidianas.',14)," +
-    "('trilha','Trilha da Aventura','Avançar em etapas ao realizar atividades.',15)"
+    "('trilha','Trilha da Aventura','Avançar em etapas ao realizar atividades.',15)," +
+    "('historia_interativa','História Interativa','Completar histórias e responder perguntas.',16)"
   );
   console.log('✔ novos tipos de jogo');
 

@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import type { GameCtx, ActivityPlan } from './GameShell';
+import { JOGOS_NOVOS } from './novos';
 import { speech } from '../lib/speech';
 import { AudioButton, emojiFor } from '../components/ui';
 import type { ComponentType } from 'react';
@@ -401,6 +402,15 @@ export const GAME_REGISTRY: Record<string, GameComponent> = {
   vogais_silabas: VogaisSilabas,
   historias: Historias,
   instalacao: Instalacao,
+  // --- Biblioteca de jogos ampliada (fase 3) ---
+  caca_sons: JOGOS_NOVOS.caca_sons,
+  mundo_animais: JOGOS_NOVOS.mundo_animais,
+  monte_palavra: JOGOS_NOVOS.monte_palavra,
+  historia_interativa: JOGOS_NOVOS.historia_interativa,
+  qual_figura: JOGOS_NOVOS.qual_figura,
+  roleta: JOGOS_NOVOS.roleta,
+  missoes: JOGOS_NOVOS.missoes,
+  trilha: JOGOS_NOVOS.trilha,
 };
 
 /**
