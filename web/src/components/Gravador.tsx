@@ -30,7 +30,9 @@ export function Gravador({
   const timer = useRef<number | null>(null);
 
   useEffect(() => {
-    api(`/recordings/${patientId}/consentimento`).then(setConsent).catch(() => setConsent({ autorizado: false, por_quem: null }));
+    api(`/recordings/${patientId}/consentimento`)
+      .then(setConsent)
+      .catch(() => setConsent({ autorizado: false, por_quem: null }));
   }, [patientId]);
 
   const parar = () => {

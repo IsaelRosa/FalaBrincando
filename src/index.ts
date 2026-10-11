@@ -19,11 +19,49 @@ const app = express();
 app.use(cors({ origin: env.corsOrigin === '*' ? true : env.corsOrigin.split(',') }));
 app.use(express.json({ limit: '5mb' }));
 
+/**
+ * Colunas e tabelas obrigatórias. Se faltar algo, /api/health diz exatamente o quê.
+ * Evita descobrir o problema só quando uma tela quebra.
+ */
+const REQUERIDOS: Record<string, string[]> = {
+  patients: ['id','nome','owner_fono_id','avatar','metas','necessidades','preferencias',
+             'acessibilidade','tipo_comunicacao','lembrete_ativo','tratamento_inicio'],
+  activity_plans: ['id','patient_id','game_key','habilidade','objetivo','passos','nivel','library_id'],
+  activity_library: ['id','game_key','title','habilidade','idade_min','nivel','status'],
+  patient_guardians: ['patient_id','guardian_id','senha_hash','status','valido_ate'],
+  recordings: ['id','patient_id','uploaded_by','file_path'],
+  phonemes: ['id','symbol','words','syllables','target_positions'],
+};
+
 app.get('/api/health', async (_req, res) => {
   const base = { app: 'FalaBrincando', ts: new Date().toISOString() };
   try {
     await q('SELECT 1');
-    res.json({ ...base, ok: true, db: 'conectado' });
+
+    const faltando: string[] = [];
+    for (const [tabela, colunas] of Object.entries(REQUERIDOS)) {
+      const linhas = await q<any>(
+        `SELECT COLUMN_NAME FROM information_schema.COLUMNS
+         WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = ?`,
+        [tabela]
+      );
+      const existentes = new Set(linhas.map((r) => String(r.COLUMN_NAME ?? r.column_name)));
+      if (!existentes.size) {
+        faltando.push(`tabela ${tabela}`);
+        continue;
+      }
+      for (const c of colunas) if (!existentes.has(c)) faltando.push(`${tabela}.${c}`);
+    }
+
+    if (faltando.length) {
+      return res.status(503).json({
+        ...base, ok: false, db: 'conectado', schema_incompleto: true,
+        faltando,
+        aviso:
+          'O banco está desatualizado. Importe db/atualizacao.sql e db/acesso.sql pelo phpMyAdmin.',
+      });
+    }
+    res.json({ ...base, ok: true, db: 'conectado', schema: 'completo' });
   } catch (err: any) {
     res.status(503).json({ ...base, ok: false, db: friendlyDbError(err), code: err?.code ?? null });
   }

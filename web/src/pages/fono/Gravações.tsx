@@ -8,8 +8,12 @@ export function Gravações({ patientId }: { patientId: number }) {
   const [quem, setQuem] = useState('');
 
   const carregar = () => {
-    api(`/recordings/${patientId}`).then(setLista).catch(() => {});
-    api(`/recordings/${patientId}/consentimento`).then(setConsent).catch(() => {});
+    api(`/recordings/${patientId}`)
+      .then(setLista)
+      .catch(() => setLista([]));
+    api(`/recordings/${patientId}/consentimento`)
+      .then(setConsent)
+      .catch(() => setConsent(null));
   };
   useEffect(() => { carregar(); }, [patientId]);
 
@@ -32,6 +36,12 @@ export function Gravações({ patientId }: { patientId: number }) {
 
   return (
     <>
+      {consent === null && (
+        <div className="alert warn">
+          Não foi possível ler a autorização de gravações deste paciente. Confirme que você tem
+          acesso a ele — a fonoaudióloga só vê os próprios pacientes.
+        </div>
+      )}
       <div className="card">
         <h3>🎙️ Autorização para gravações de voz</h3>
         {msg && <div className="alert ok">{msg}</div>}

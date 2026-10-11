@@ -21,6 +21,7 @@ export function Biblioteca() {
   const [pacientes, setPacientes] = useState<any[]>([]);
   const [pacSel, setPacSel] = useState('');
   const [msg, setMsg] = useState('');
+  const [erro, setErro] = useState('');
   const [detalhe, setDetalhe] = useState<any | null>(null);
 
   const carregar = () => {
@@ -29,11 +30,16 @@ export function Biblioteca() {
     if (idade) q.set('idade', idade);
     if (nivel) q.set('nivel', nivel);
     if (search) q.set('search', search);
-    api<any[]>(`/library?${q}`).then(setLista).catch((e) => setMsg(e.message));
+    setErro('');
+    api<any[]>(`/library?${q}`)
+      .then(setLista)
+      .catch((e) => { setLista([]); setErro(e.message); });
   };
 
   useEffect(() => {
-    api<any[]>('/patients').then((p) => { setPacientes(p); if (p[0]) setPacSel(String(p[0].id)); }).catch(() => {});
+    api<any[]>('/patients')
+      .then((p) => { setPacientes(p); if (p[0]) setPacSel(String(p[0].id)); })
+      .catch(() => {});
   }, []);
   useEffect(() => { carregar(); }, [hab, idade, nivel]);
 
@@ -62,6 +68,12 @@ export function Biblioteca() {
       </p>
 
       {msg && <div className="alert ok">{msg}</div>}
+      {erro && (
+        <div className="alert error">
+          Não foi possível carregar a biblioteca: {erro}. Abra{' '}
+          <code>/api/health</code> para ver o que falta no banco.
+        </div>
+      )}
 
       <div className="card">
         <div className="row">
