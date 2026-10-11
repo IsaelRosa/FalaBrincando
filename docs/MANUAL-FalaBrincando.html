@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>FalaBrincando — Manual de Uso</title>
+<style>
+@page { size: A4; margin: 18mm 15mm 16mm; }
+:root{
+  --navy:#183b56; --teal:#1b9aaa; --mint:#dff6ef; --coral:#ff8066;
+  --yellow:#ffd166; --cream:#fffaf2; --ink:#254052; --muted:#627783;
+}
+*{box-sizing:border-box}
+body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;color:var(--ink);
+     font-size:10.5pt;line-height:1.6;margin:0}
+h1,h2,h3,h4{color:var(--navy);line-height:1.25;margin:0 0 .5em}
+h1{font-size:26pt;letter-spacing:-1px}
+h2{font-size:16pt;margin-top:26px;padding-bottom:6px;border-bottom:2px solid var(--mint)}
+h3{font-size:12.5pt;margin-top:18px;color:#147b78}
+h4{font-size:11pt;margin-top:14px}
+p{margin:0 0 .9em}
+ul,ol{margin:0 0 1em;padding-left:1.3em}
+li{margin-bottom:.35em}
+code{background:var(--mint);padding:1px 6px;border-radius:5px;font-size:9.5pt}
+.capa{height:250mm;display:flex;flex-direction:column;justify-content:center;
+      background:linear-gradient(140deg,#effbf7,#fffaf2);border-radius:14px;padding:34px;text-align:center}
+.capa .logo{font-size:64px}
+.capa h1{margin:16px 0 8px;font-size:34pt}
+.capa p{color:var(--muted);font-size:13pt}
+.capa .aviso{margin-top:26px;font-size:9.5pt;background:#fff7e6;border-left:4px solid var(--yellow);
+            padding:12px 16px;border-radius:0 10px 10px 0;text-align:left;color:var(--muted)}
+.caixa{border:1px solid #dfeae6;border-left:5px solid var(--teal);border-radius:10px;
+       padding:13px 17px;margin:14px 0;background:#fbfefd;break-inside:avoid}
+.caixa.atencao{border-left-color:var(--coral);background:#fff6f4}
+.caixa.dica{border-left-color:var(--yellow);background:#fffdf5}
+.caixa h4{margin:0 0 6px}
+table{width:100%;border-collapse:collapse;margin:12px 0 16px;font-size:9.5pt;break-inside:avoid}
+th{background:#eff9f6;color:var(--navy);text-align:left;padding:8px 9px;border:1px solid #dfeae6}
+td{padding:8px 9px;border:1px solid #dfeae6;vertical-align:top}
+tr{break-inside:avoid}
+.passos{counter-reset:p;list-style:none;padding:0}
+.passos li{counter-increment:p;position:relative;padding-left:34px;margin-bottom:9px}
+.passos li::before{content:counter(p);position:absolute;left:0;top:1px;width:23px;height:23px;
+  background:var(--teal);color:#fff;border-radius:7px;text-align:center;line-height:23px;
+  font-weight:700;font-size:10pt}
+.tag{display:inline-block;background:var(--mint);color:#147b78;padding:2px 10px;border-radius:999px;
+     font-size:8.5pt;font-weight:700;margin-right:5px}
+.divisor{page-break-after:always}
+.duas{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.cartao{border:1px solid #dfeae6;border-radius:12px;padding:14px;break-inside:avoid;background:#fff}
+.cartao h4{margin:0 0 6px;font-size:10.5pt}
+.cartao .emo{font-size:20px}
+small{color:var(--muted)}
+.rodape{margin-top:30px;padding-top:12px;border-top:1px solid #e2ebe7;color:var(--muted);font-size:8.5pt}
+</style>
+</head>
+<body>
+
+<!-- ================= CAPA ================= -->
+<div class="capa">
+  <div class="logo">🗣️</div>
+  <h1>FalaBrincando</h1>
+  <p style="font-size:14pt;font-weight:600">Manual de Uso — Terapia da Fala em Casa</p>
+  <p style="margin-top:10px">Guia completo para fonoaudiólogas e responsáveis</p>
+
+  <div class="aviso">
+    <strong>Aviso importante.</strong> O FalaBrincando é uma ferramenta <strong>complementar</strong>
+    ao acompanhamento fonoaudiológico. Não substitui avaliação, diagnóstico ou tratamento.
+    Nenhuma instrução clínica é gerada automaticamente: todo conteúdo é cadastrado,
+    revisado e liberado pela fonoaudióloga. O sistema não avalia nem classifica a pronúncia
+    da criança automaticamente.
+  </div>
+</div>
+
+<div class="divisor"></div>
+
+<!-- ================= 1. VISÃO GERAL ================= -->
+<h2>1. O que é o FalaBrincando</h2>
+
+<p>Uma aplicação web para apoio da prática domiciliar de exercícios de <strong>fala, articulação,
+linguagem e comunicação infantil</strong>. Três ambientes:
+
+<div class="duas">
+  <div class="cartao"><div class="emo">🩺</div><h4>Painel da fonoaudióloga</h4>
+    <small>Cadastra pacientes, monta planos, escolhe atividades e acompanha a evolução.</small></div>
+  <div class="cartao"><div class="emo">👩‍👧</div><h4>Painel dos responsáveis</h4>
+    <small>Executa as missões do dia, registra tentativas e anota observações.</small></div>
+  <div class="cartao"><div class="emo">🧒</div><h4>Área da criança</h4>
+    <small>Tela infantil com jogos grandes, coloridos e narrados.</small></div>
+  <div class="cartao"><div class="emo">🌐</div><h4>Página inicial</h4>
+    <small>Apresentação do projeto e criação de conta.</small></div>
+</div>
+
+<h3>O que o sistema tem</h3>
+<table>
+<tr><th>Recurso</th><th>Descrição</th></tr>
+<tr><td><strong>20 fonemas</strong></td><td>P, B, T, D, K, G, F, V, M, N, NH, J, Z, CH, QU, S, R, L, X, LH — cada um com 12 ou mais palavras, sílabas, frases e notas sobre a pronúncia do português brasileiro.</td></tr>
+<tr><td><strong>Trilha em 7 etapas</strong></td><td>Fonema isolado · Sílabas · Palavras · Frases · Leitura em voz alta · Conversa estruturada · Generalização.</td></tr>
+<tr><td><strong>25 atividades</strong></td><td>Organizadas em 6 habilidades: articulação, consciência fonológica, linguagem, comunicação funcional, fluência e motricidade orofacial.</td></tr>
+<tr><td><strong>16 jogos</strong></td><td>Pontaria, Memória, O que é?, Intruso, Álbum, Vogais e Sílabas, Histórias, Instalação, Caça aos Sons, Mundo dos Animais, Monte a Palavra, História Interativa, Qual é a Figura?, Roleta, Missões e Trilha.</td></tr>
+<tr><td><strong>Acompanhamento</strong></td><td>Calendário de exercícios, nível de ajuda (sozinha / com pistas / com ajuda) e indicadores por habilidade.</td></tr>
+<tr><td><strong>Gravação de voz</strong></td><td>A criança grava tentativas para a fonoaudióloga ouvir — somente com autorização registrada.</td></tr>
+</table>
+
+<h2>2. Perfis, contas e quem vê o quê</h2>
+
+<table>
+<tr><th>Perfil</th><th>Acesso</th></tr>
+<tr><td><strong>Fonoaudióloga</strong></td><td>Somente os pacientes que ela cadastrou. Cria fonemas, planos, atividades e materiais. Registra observações clínicas.</td></tr>
+<tr><td><strong>Responsável</strong></td><td>Somente as crianças vinculadas a ela pelo e-mail. Executa as atividades e anota como foi.</td></tr>
+<tr><td><strong>Visitante</strong></td><td>Acessa apenas a página inicial pública e o formulário de cadastro.</td></tr>
+</table>
+
+<div class="caixa atencao">
+<h4>Como o responsável ganha acesso</h4>
+<ol>
+<li>A fonoaudióloga cadastra o paciente.</li>
+<li>Na aba <strong>👪 Responsáveis</strong>, ela informa nome e <strong>e-mail</strong> do responsável e define <strong>até quando</strong> o acesso vale.</li>
+<li>O sistema gera uma <strong>senha sugerida</strong> (ex.: <code>Joana846@62</code>). A fonoaudióloga pode escrever outra.</li>
+<li>O responsável entra em <strong>Criar conta</strong> com esse mesmo e-mail e usa a senha informada.</li>
+</ol>
+<p style="margin-top:8px;margin-bottom:0"><strong>O responsável nunca escolhe a criança.</strong>
+O vínculo é feito só pela fonoaudióloga. Assim ninguém consegue entrar no plano de uma
+criança que não é sua.</p>
+</div>
+
+<h3>Controle do período de acesso</h3>
+<p>A fonoaudióloga pode <strong>suspender</strong>, <strong>encerrar</strong>, <strong>reativar</strong>
+ou <strong>trocar a senha</strong> a qualquer momento. Quando o prazo termina, o responsável
+recebe a mensagem: <em>"O período de acompanhamento desta criança terminou. Fale com a fonoaudióloga."</em></p>
+
+<div class="divisor"></div>
+
+<!-- ================= 3. FLUXO DA FONO ================= -->
+<h2>3. A fonoaudióloga: passo a passo</h2>
+
+<div class="caixa dica">
+<h4>Ordem sugerida</h4>
+<ol style="margin-bottom:0">
+<li>Cadastrar o paciente</li>
+<li>Preencher o perfil infantil</li>
+<li>Definir os fonemas-alvo</li>
+<li>Montar a trilha de etapas</li>
+<li>Escolher atividades da biblioteca</li>
+<li>Liberar o acesso do responsável</li>
+<li>Acompanhar</li>
+</ol>
+</div>
+
+<h3>3.1 Cadastrar o paciente</h3>
+<p>No menu <strong>Painel</strong>, use o campo <em>Novo paciente</em>. Informe apenas o nome da
+criança. O resto do perfil você completa depois.</p>
+<p><small>Os dados de demonstração do sistema são fictícios. Em uso real, registre o consentimento
+do responsável antes de coletar qualquer informação da criança.</small></p>
+
+<h3>3.2 Preencher o perfil infantil</h3>
+<p>Clique em <strong>👶 Perfil</strong> no cartão do paciente. Preencha:</p>
+
+<table>
+<tr><th>Campo</th><th>Para que serve</th></tr>
+<tr><td><strong>Nome e apelido</strong></td><td>Como a criança aparece no app. O apelido é mais útil para ela.</td></tr>
+<tr><td><strong>Data de nascimento</strong></td><td>A idade é calculada sozinha e usada para filtrar atividades.</td></tr>
+<tr><td><strong>Avatar</strong></td><td>Escolha um dos 12 personagens. Ajuda a criança a reconhecer o próprio espaço.</td></tr>
+<tr><td><strong>Forma de comunicação</strong></td><td>Oral, mista ou <strong>AAC</strong>. Quando a criança usa AAC, nenhuma atividade exige fala oral.</td></tr>
+<tr><td><strong>Necessidades</strong></td><td>TEA, síndrome de Down, atraso de linguagem, etc. Ajuda a lembrar adaptações.</td></tr>
+<tr><td><strong>Preferências</strong></td><td>Animais, veículos, desenhar, cozinhar… Use nos jogos e nas escolhas.</td></tr>
+<tr><td><strong>Acessibilidade</strong></td><td>Instruções em áudio, texto ampliado, prancha de imagens, sem animação, tempo maior de resposta.</td></tr>
+<tr><td><strong>Metas terapêuticas</strong></td><td>Escreva com prazo. Ex.: <em>"Produzir /s/ inicial em 8 de 10 tentativas"</em>.</td></tr>
+<tr><td><strong>Observações dos responsáveis</strong></td><td>Como a criança se comunica em casa. Campo livre.</td></tr>
+</table>
+
+<h3>3.3 Definir os fonemas-alvo</h3>
+<p>No menu <strong>Fonemas</strong>. Cada fonema guarda:</p>
+<ul>
+<li><strong>Som ou modelo de fala</strong> — como Produzir, escrito para o responsável ler junto.</li>
+<li><strong>Variação do português brasileiro</strong> — exemplos reais: o P final vocaliza-se
+("sapato" ≈ "sapatu"); T e D são dentais; F e V têm o mesmo lugar de articulação mas F não tem voz;
+o X muda conforme a palavra.</li>
+<li><strong>Posições na palavra</strong> — inicial, medial ou final.</li>
+<li><strong>Sílabas e combinações</strong> — ex.: SA, SE, SI + "sa-se", "se-ta".</li>
+<li><strong>Palavras com posição e sílabas</strong> — 12 ou mais por fonema.</li>
+<li><strong>Frases e textos</strong> — para as etapas mais avançadas.</li>
+<li><strong>Instruções ao responsável</strong> — o texto exato do que fazer em casa.</li>
+<li><strong>Objetivos e critérios de acompanhamento</strong>.</li>
+</ul>
+
+<div class="caixa atencao">
+<h4>Modelos globais são somente leitura</h4>
+<p style="margin-bottom:0">Os 20 fonemas que vêm prontos são <strong>modelos globais</strong>.
+Para adaptar um deles à sua prática, clique em <strong>“Duplicar para minha conta”</strong>.
+Isso cria uma cópia editável e preserva o original. É assim que o conteúdo compartilhado
+não se degrada com o tempo.</p>
+</div>
+
+<h3>3.4 Montar a trilha de etapas</h3>
+<p>Em <strong>Plano</strong>, use <em>Adicionar etapa</em>. Escolha o fonema e a etapa — ou várias.</p>
+
+<div class="caixa atencao">
+<h4>A ordem é sua</h4>
+<p style="margin-bottom:0">A trilha <strong>não impõe uma sequência</strong>. Nem toda criança
+precisa passar por todas as etapas, nem nesta ordem. Você pode liberar “Frases” sem “Palavras”,
+ou voltar para “Sílabas” depois de avançar. Use <em>ordem personalizada</em> para arrangement.</p>
+</div>
+
+<p>Para cada etapa você define:</p>
+<ul>
+<li><strong>Status</strong>: ativa · pausada · concluída · retomar</li>
+<li><strong>Critério clínico para avançar</strong> — escrito por você, por exemplo
+"8 de 10 tentativas com apenas o modelo adulto".</li>
+<li><strong>Decisão</strong>: <em>avançar</em>, <em>manter</em> ou <em>retomar</em>, com data e registro.</li>
+</ul>
+
+<h3>3.5 Escolher atividades da biblioteca</h3>
+<p>No menu <strong>Biblioteca</strong>. Filtre por habilidade, idade ou nível, e clique em
+<strong>➕ Adicionar ao plano</strong> para o paciente escolhido.</p>
+
+<p>Ao adicionar, o sistema copia para o plano: objetivo, materiais, passo a passo, critérios de
+observação, adaptações e orientações ao responsável. Você pode editar tudo depois.</p>
+
+<h3>3.6 Liberar o acesso do responsável</h3>
+<p>Na aba <strong>👪 Responsáveis</strong> do paciente:</p>
+<ol class="passos">
+<li>Informe nome, e-mail e telefone do responsável.</li>
+<li>Escolha o parentesco.</li>
+<li>Deixe a senha em branco para o sistema sugerir, ou escreva uma própria.</li>
+<li>Defina a data final do acesso (período do tratamento).</li>
+<li>Clique em <strong>Liberar acesso</strong>.</li>
+<li>Copie a senha sugerida e passe ao responsável por um canal seguro.</li>
+</ol>
+
+<div class="caixa">
+<h4>Se o responsável já criou a conta</h4>
+<p style="margin-bottom:0">Basta informar o mesmo e-mail. O sistema reutiliza a conta existente
+e aplica o período de validade.</p>
+</div>
+
+<div class="divisor"></div>
+
+<!-- ================= 4. ATIVIDADES ================= -->
+<h2>4. As atividades: como cada uma funciona</h2>
+
+<p>Cada atividade da biblioteca tem <strong>objetivo, materiais, passo a passo, modelo de fala,
+tempo estimado, nível, critérios de observação, adaptações e orientações ao responsável</strong>.
+Abaixo, o resumo de cada uma.</p>
+
+<h3>4.1 Articulação e pronúncia</h3>
+<table>
+<tr><th>Atividade</th><th>Jogo</th><th>Idade</th><th>Tempo</th><th>Objetivo</th></tr>
+<tr><td><strong>Caça aos Sons — inicial</strong></td><td>Caça aos Sons</td><td>3–8</td><td>10 min</td><td>Produzir o som-alvo em posição inicial de palavra.</td></tr>
+<tr><td><strong>Pontaria do som-alvo</strong></td><td>Pontaria</td><td>3–10</td><td>10 min</td><td>Manter o som em repetições orientadas, registrando tentativas.</td></tr>
+<tr><td><strong>Monte a Palavra</strong></td><td>Monte a Palavra</td><td>5–12</td><td>10 min</td><td>Sequenciar sílabas separando os sons.</td></tr>
+<tr><td><strong>Roleta das Palavras — S</strong></td><td>Roleta</td><td>4–10</td><td>8 min</td><td>Praticar o som em palavras sorteadas.</td></tr>
+<tr><td><strong>Trilha da Aventura</strong></td><td>Trilha</td><td>4–12</td><td>10 min</td><td>Avançar por degraus até situações reais.</td></tr>
+<tr><td><strong>Álbum de Figuras — S</strong></td><td>Álbum</td><td>3–8</td><td>8 min</td><td>Nomear figuras do som-alvo com apoio visual.</td></tr>
+</table>
+
+<h3>4.2 Consciência fonológica</h3>
+<table>
+<tr><th>Atividade</th><th>Jogo</th><th>Idade</th><th>Objetivo</th></tr>
+<tr><td><strong>Memória das Rimas</strong></td><td>Memória</td><td>4–10</td><td>Reconhecer palavras que rimam.</td></tr>
+<tr><td><strong>Palmas nas Sílabas</strong></td><td>Vogais e Sílabas</td><td>4–10</td><td>Segmentação silábica com apoio motor.</td></tr>
+<tr><td><strong>Som no meio e no fim</strong></td><td>Caça aos Sons</td><td>5–12</td><td>Discriminar a posição do som na palavra.</td></tr>
+<tr><td><strong>Encontre o Intruso — L</strong></td><td>Intruso</td><td>4–10</td><td>Discriminar o que não pertence ao grupo.</td></tr>
+</table>
+
+<h3>4.3 Desenvolvimento da linguagem</h3>
+<table>
+<tr><th>Atividade</th><th>Jogo</th><th>Idade</th><th>Objetivo</th></tr>
+<tr><td><strong>Nomeando figuras</strong></td><td>O que é?</td><td>3–10</td><td>Ampliar vocabulário por categorias.</td></tr>
+<tr><td><strong>Completando frases</strong></td><td>O que é?</td><td>4–10</td><td>Construir frases simples e completas.</td></tr>
+<tr><td><strong>Descrevendo a cena</strong></td><td>Histórias</td><td>4–12</td><td>Expandir a linguagem expressiva.</td></tr>
+<tr><td><strong>Responde sobre histórias</strong></td><td>Histórias</td><td>5–12</td><td>Compreender texto oral e responder perguntas.</td></tr>
+<tr><td><strong>História Interativa</strong></td><td>História Interativa</td><td>4–12</td><td>Acompanhar a narrativa e responder.</td></tr>
+<tr><td><strong>Qual é a Figura?</strong></td><td>Qual é a Figura?</td><td>4–10</td><td>Identificar figuras a partir de pistas orais.</td></tr>
+<tr><td><strong>Mundo dos Animais</strong></td><td>Mundo dos Animais</td><td>3–8</td><td>Nomear animais e trabalhar sons iniciais.</td></tr>
+</table>
+
+<h3>4.4 Comunicação funcional</h3>
+<table>
+<tr><th>Atividade</th><th>Jogo</th><th>Idade</th><th>Objetivo</th></tr>
+<tr><td><strong>Missão do Pedido</strong></td><td>Missões</td><td>4–12</td><td>Pedir com frase em situações cotidianas.</td></tr>
+<tr><td><strong>Missão do Sentimento</strong></td><td>Missões</td><td>4–12</td><td>Nomear sentimentos e necessidades.</td></tr>
+<tr><td><strong>Conversa em dois turnos</strong></td><td>Roleta</td><td>5–12</td><td>Iniciar e manter uma conversa.</td></tr>
+</table>
+
+<h3>4.5 Fluência da fala</h3>
+<table>
+<tr><th>Atividade</th><th>Jogo</th><th>Idade</th><th>Objetivo</th></tr>
+<tr><td><strong>Rodinha de conversa calma</strong></td><td>Roleta</td><td>4–12</td><td>Reduzir a pressão comunicativa e organizar turnos.</td></tr>
+<tr><td><strong>Contar sem pressa</strong></td><td>Histórias</td><td>5–12</td><td>Permitir disfluências sem correção.</td></tr>
+</table>
+
+<div class="caixa atencao">
+<h4>Fluência — regras do jogo</h4>
+<p style="margin-bottom:0">Nessas atividades <strong>não se pede para a criança falar sem travar</strong>.
+Não corrija, não complete a frase dela, não peça repetição. Respeite pausas longas.
+Qualquer tentativa de comunicar é válida.</p>
+</div>
+
+<h3>4.6 Motricidade orofacial</h3>
+<table>
+<tr><th>Atividade</th><th>Jogo</th><th>Idade</th><th>Objetivo</th></tr>
+<tr><td><strong>Sequência orofacial</strong></td><td>Instalação</td><td>4–12</td><td>Exercícios indicados após avaliação específica.</td></tr>
+</table>
+
+<div class="caixa atencao">
+<h4>Somente com sua indicação</h4>
+<p style="margin-bottom:0">O sistema <strong>bloqueia o cadastro</strong> de atividade de motricidade
+orofacial sem passos ou modelo de fala definidos por você. Exercícios de língua, lábios ou sopro
+<strong>não são presumidos</strong> para corrigir dificuldade de fala. São indicados após avaliação.</p>
+</div>
+
+<h3>4.7 Instalação do Fonema</h3>
+<p>Este espaço é <strong>vazio por padrão</strong>. Você monta a sequência de passos e o modelo de
+fala. O sistema <strong>não gera instruções clínicas sozinho</strong>. Enquanto você não preencher,
+a atividade mostra um aviso e não libera nada à criança.</p>
+
+<div class="divisor"></div>
+
+<!-- ================= 5. OS JOGOS ================= -->
+<h2>5. Como funciona cada jogo</h2>
+
+<h3>🎯 Jogo da Pontaria</h3>
+<p><strong>Objetivo:</strong> praticar a palavra repetidas vezes, registrando cada tentativa.</p>
+<ul>
+<li>Aparece uma figura grande com o nome da palavra.</li>
+<li>Toque no nome ou em <em>🔊 Ouvir</em> para ouvir a pronúncia.</li>
+<li>A criança repete a palavra. Clique em cada círculo para marcar a tentativa.</li>
+<li><em>Próxima figura</em> troca a palavra.</li>
+</ul>
+<p><small>Configurável: número de tentativas e lista de palavras.</small></p>
+
+<h3>🃏 Jogo da Memória</h3>
+<ul>
+<li>Cartas viradas. Ao tocar, a carta mostra a figura e o nome é narrado.</li>
+<li>Achildade procura os pares iguais.</li>
+<li>O nível de dificuldade é configurável pelo número de pares.</li>
+</ul>
+
+<h3>🗣️ O que é? O que é?</h3>
+<ul>
+<li>Uma pergunta aparece ("O que começa com S?").</li>
+<li><em>Ver a resposta</em> revela a figura e o nome, com narração.</li>
+<li>As perguntas são <strong>previamente cadastradas</strong> por você.</li>
+</ul>
+
+<h3>🔍 Encontre o Intruso</h3>
+<ul>
+<li>Um grupo de figuras aparece.</li>
+<li>A criança escolhe a que não pertence ao grupo.</li>
+<li>Não há penalidade: errar faz parte da atividade.</li>
+</ul>
+
+<h3>📖 Álbum de Figuras</h3>
+<ul>
+<li>Folheia as figuras do fonema.</li>
+<li>Cada figura tem narração, nome escrito e botão de repetir.</li>
+</ul>
+
+<h3>🔤 Ficha de Vogais e Sílabas</h3>
+<ul>
+<li>Botões grandes com o som + vogal (SA, SE, SI, SO, SU).</li>
+<li>Toque para ouvir devagar, alternando entre fonema e vogal.</li>
+</ul>
+
+<h3>📚 Histórias Falantes</h3>
+<ul>
+<li>Cena ilustrada com pergunta.</li>
+<li><em>Ver modelo de frase</em> mostra uma frase possível — não a resposta certa.</li>
+</ul>
+
+<h3>🔎 Caça aos Sons</h3>
+<ul>
+<li>Mostra figuras: algumas começam com o som, outras não.</li>
+<li>A criança toca nas que começam com o som.</li>
+<li>Ao acertar, a narração confirma: <em>"Isso! Sol começa com s."</em></li>
+</ul>
+
+<h3>🐾 Mundo dos Animais</h3>
+<ul>
+<li>Grade de animais. <em>Mostrar o nome</em> revela a palavra.</li>
+<li>Ideal para ampliar vocabulário e trabalhar sons iniciais.</li>
+</ul>
+
+<h3>🧩 Monte a Palavra</h3>
+<ul>
+<li>Mostra a figura e as sílabas embaralhadas.</li>
+<li>A criança toca nas sílabas na ordem para formar a palavra.</li>
+<li>A separação silábica é automática; se quiser divisão exata, cadastre as sílabas no fonema.</li>
+</ul>
+
+<h3>❓ Qual é a Figura?</h3>
+<ul>
+<li>Uma pista oral aparece ("Serve para abrir a porta").</li>
+<li>A criança escolhe entre as figuras.</li>
+</ul>
+
+<h3>🎡 Roleta das Palavras</h3>
+<ul>
+<li>Toque para girar. A palavra sorteada aparece com narração.</li>
+<li>As palavras já sorteadas ficam listadas abaixo.</li>
+</ul>
+
+<h3>🗺️ Missões da Comunicação</h3>
+<ul>
+<li>Cenário do cotidiano: loja, casa, escola.</li>
+<li>A criança formula o pedido; existem opções de apoio.</li>
+<li><em>Ouvir um modelo</em> mostra uma frase possível.</li>
+</ul>
+
+<h3>🗺️ Trilha da Aventura</h3>
+<ul>
+<li>Degraus do mais fácil ao mais difícil: ouvir o som → dizer o som → palavra → frase → usar em casa.</li>
+<li>Pode voltar e repetir. Parar não apaga o progresso.</li>
+</ul>
+
+<div class="caixa">
+<h4>Todos os jogos</h4>
+<p style="margin-bottom:0">Têm narração, botão de repetir, sem cronômetro obrigatório,
+sem penalidade por erro e sem comparação entre crianças. Todo/register tentativa fica registrada
+para a fonoaudióloga, <strong>sem classificação automática</strong>.</p>
+</div>
+
+<div class="divisor"></div>
+
+<!-- ================= 6. RESPONSÁVEL ================= -->
+<h2>6. O responsável: como usar no dia a dia</h2>
+
+<h3>6.1 A tela "Minha missão de hoje"</h3>
+<p>Ao entrar, o responsável vê as atividades do dia. Cada cartão mostra o jogo, a etapa, o tempo
+estimado, a frequência e as instruções da fonoaudióloga.</p>
+
+<div class="caixa dica">
+<h4>As instruções da profissional aparecem sempre</h4>
+<p style="margin-bottom:0">No cartão e de novo dentro da atividade, o botão <em>📌 Ouvir instruções</em>
+lê em voz alta exatamente o que a fonoaudióloga escreveu. Você nunca precisa lembrar de cabeça.</p>
+</div>
+
+<h3>6.2 Executando uma atividade</h3>
+<ol class="passos">
+<li>Toque em <strong>Começar</strong> no cartão da atividade.</li>
+<li>Ouça o botão <em>📌 Ouvir instruções</em> se precisar.</li>
+<li>Execute o jogo com a criança. Use <em>🔁 Repetir</em> sempre que quiser.</li>
+<li>Ao terminar, toque em <strong>✅ Terminei!</strong></li>
+<li>Escolha como foi: <strong>💪 Sozinha</strong> · <strong>💡 Com pistas</strong> · <strong>🤝 Com ajuda</strong></li>
+<li>Opcionalmente, escreva uma observação em uma linha.</li>
+</ol>
+
+<h3>6.3 Se a criança cansar</h3>
+<div class="caixa atencao">
+<p style="margin-bottom:0">Pode usar <strong>⏸️ Pausar</strong> ou <strong>⏹️ Parar por hoje</strong>
+a qualquer momento. A tela avisa: <em>"Pode parar quando quiser — não há errado e não perde nada."</em>
+Nada é descontado e o progresso fica registrado. A pausa é recomendada, não uma falha.</p>
+</div>
+
+<h3>6.4 Ajustes da interface</h3>
+<ul>
+<li><strong>🔊 Narração</strong> — liga e desliga a narração.</li>
+<li><strong>Velocidade</strong> — ajuste para fala mais lenta ou normal.</li>
+<li><strong>✨ Animações / ⛔ Sem animação</strong> — respeita a preferência do sistema.</li>
+</ul>
+
+<h3>6.5 Gravando a voz</h3>
+<p>Se você autorizou as gravações no painel da fonoaudióloga, aparece o botão <strong>🎙️ Gravar minha
+tentativa</strong> ao final de cada atividade.</p>
+<div class="caixa atencao">
+<p style="margin-bottom:0">Sem autorização registrada, o botão <strong>não aparece</strong> e o servidor
+recusa a gravação. Quem ouve é somente a fonoaudióloga responsável. A gravação serve para comparar —
+<strong>não gera nota, diagnóstico nem correção automática</strong>.</p>
+</div>
+
+<h3>6.6 Histórico e calendário</h3>
+<ul>
+<li><strong>📅 Calendário</strong> — dias com atividade concluída, e 🔥 de dias seguidos.</li>
+<li><strong>📅 Meu histórico</strong> — tabela de tudo que foi feito, com situação, tempo e observações.</li>
+<li><strong>⏰ Lembrete</strong> — você escolhe o horário e os dias. <strong>Sem cobrança e sem punição.</strong></li>
+</ul>
+
+<div class="divisor"></div>
+
+<!-- ================= 7. RESULTADOS ================= -->
+<h2>7. O que esperar de resultados</h2>
+
+<h3>7.1 O que o sistema mostra</h3>
+<table>
+<tr><th>Indicador</th><th>O que significa</th><th>O que NÃO significa</th></tr>
+<tr><td><strong>Frequência</strong></td><td>Quantas vezes a atividade foi realizada e por quanto tempo.</td><td>Não mede progresso.</td></tr>
+<tr><td><strong>Nível de ajuda</strong></td><td>Se a criança fez sozinha, com pistas ou com ajuda.</td><td>Não é nota nem classificação da pronúncia.</td></tr>
+<tr><td><strong>Desempenho registrado</strong></td><td>Marcas de acerto feitas pelo responsável ou pela fonoaudióloga.</td><td>Não é avaliação automática.</td></tr>
+<tr><td><strong>Recompensas simbólicas</strong></td><td>Estrelas e conquistas por participação.</td><td>Não indicam evolução clínica.</td></tr>
+<tr><td><strong>Gravações</strong></td><td>Material para a fonoaudióloga ouvir e comentar.</td><td>Não há análise automática de som.</td></tr>
+</table>
+
+<div class="caixa atencao">
+<h4>O sistema nunca diagnostica</h4>
+<p style="margin-bottom:0">Não há nota, não há nota de pronúncia, não há laudo e não há
+recomendação clínica automática. Todo dado registrado é <strong>registro de acompanhamento</strong>.
+A interpretação é da fonoaudióloga, com base na avaliação individual.</p>
+</div>
+
+<h3>7.2 O que esperar em cada etapa</h3>
+<table>
+<tr><th>Etapa</th><th>Indicador de que a criança está na etapa</th></tr>
+<tr><td><strong>Fonema isolado</strong></td><td>Reproduz o som sozinho com o modelo adulto, em tentativas curtas.</td></tr>
+<tr><td><strong>Sílabas</strong></td><td>Combina o som com vogais (SA, SE, SI) de forma consistente.</td></tr>
+<tr><td><strong>Palavras</strong></td><td>Usa o som dentro de palavras, nas posições definidas como alvo.u como alvo.</td></tr>
+<tr><td><strong>Frases</strong></td><td>Constrói frases curtas usando palavras com o som.</td></tr>
+<tr><td><strong>Leitura em voz alta</strong></td><td>Lê um texto containing o som, com apoio.</td></tr>
+<tr><td><strong>Conversa estruturada</strong></td><td>Participa de diálogos com roteiro combinado.</td></tr>
+<tr><td><strong>Generalização</strong></td><td>Usa o som em situações reais do dia a dia.</td></tr>
+</table>
+
+<p><small>Lembre: a progressão é clínica e individual. Uma criança pode avançar em uma etapa e
+manter-se em outra. <strong>Só a fonoaudióloga decide quando mudar de etapa.</strong></small></p>
+
+<h3>7.3 O que observar em casa</h3>
+<ul>
+<li>A criança se comunica mais à vontade com você?</li>
+<li>Usa novas palavras ou frases?</li>
+<li>Entende melhor o que você fala?</li>
+<li>As atividades estão sendo feitas com prazer ou com resistência?</li>
+</ul>
+<p>Anote suas observações no campo da atividade. Elas ficam visíveis para a fonoaudióloga
+e ajudam a entender o contexto que só a família vê.</p>
+
+<h3>7.4 Como a fonoaudióloga acompanha</h3>
+<ul>
+<li><strong>📈 Acompanhamento</strong> — calendário, barras por habilidade, nível de ajuda e palavras mais praticadas.</li>
+<li><strong>📊 Relatório</strong> — separado em 4 partes: frequência, registros, evolução clínica e recompensas. Imprimir salva em PDF.</li>
+<li><strong>🎙️ Gravações</strong> — ouvir e anotar observação clínica.</li>
+</ul>
+
+<div class="caixa dica">
+<h4>O painel do responsável mostra o mesmo</h4>
+<p style="margin-bottom:0">Mas com linguagem diferente e sem dado clínico. Você vê
+<strong>participação e misconexões</strong>; a fonoaudióloga vê a avaliação.</p>
+</div>
+
+<div class="divisor"></div>
+
+<!-- ================= 8. DICAS ================= -->
+<h2>8. Dicas para o responsável</h2>
+
+<div class="caixa">
+<h4>Ao apoiar a comunicação no dia a dia</h4>
+<ul style="margin-bottom:0">
+<li>Reserve momentos de atenção, mesmo curtos.</li>
+<li>Siga o interesse da criança.</li>
+<li>Fale com naturalidade — sem corrigir excessivamente.</li>
+<li>Leia histórias, cante, brinque de faz de conta.</li>
+<li>Dê tempo para que ela se expresse. Silêncio também é resposta.</li>
+<li>Evite comparar a criança com outras.</li>
+<li>Modele a palavra correta na conversa, sem apontar a falha.</li>
+</ul>
+</div>
+
+<div class="caixa">
+<h4>Ao usar as atividades</h4>
+<ul style="margin-bottom:0">
+<li>5 a 15 minutos por sessão basta. atividades curtas funcionam melhor.</li>
+<li>Sente-se ao lado, no mesmo nível da criança.</li>
+<li>Produza o som junto antes de pedir a repetição.</li>
+<li>Se o som sair diferente, repita o modelo com carinho — sem pedir correção.</li>
+<li>Celebre a tentativa, não só o acerto.</li>
+<li>Se a criança usar AAC, use pranchas e aceite comunicação por gestos ou figuras.</li>
+</ul>
+</div>
+
+<h2>9. Privacidade e ética</h2>
+<ul>
+<li><strong>Consentimento</strong> do responsável é registrado antes de coletar dados.</li>
+<li><strong>Autorização específica</strong> é exigida para gravações de voz.</li>
+<li>Perfis separados: fonoaudióloga e responsável nunca compartilham dados entre si.</li>
+<li>Cada responsável vê apenas as crianças vinculadas a ele.</li>
+<li>Uploads ficam isolados por conta.</li>
+<li>Áudio nunca é servido sem verificação de acesso.</li>
+<li>Coleta mínima: apague o que não for mais necessário.</li>
+<li>Sem publicidade comportamental infantil.</li>
+</ul>
+
+<div class="caixa atencao">
+<h4>Exclusão de dados</h4>
+<p style="margin-bottom:0">A fonoaudióloga pode encerrar o acesso de um responsável ou ocultar um
+paciente a qualquer momento. A exclusão definitiva de um cadastro de paciente deve ser solicitada
+formalmente, respeitando obrigações legais de guarda de prontuário.</p>
+</div>
+
+<div class="rodape">
+FalaBrincando — Terapia da Fala em Casa · Documento de uso interno e para famílias.<br>
+Ferramenta complementar. Não substitui avaliação, diagnóstico ou tratamento fonoaudiológico.
+</div>
+
+</body>
+</html>
