@@ -10,6 +10,7 @@ import { Relatorios, RelatorioDetalhe } from './pages/fono/Relatorios';
 import { Biblioteca } from './pages/fono/Biblioteca';
 import { Perfil } from './pages/fono/Perfil';
 import { Acompanhamento } from './pages/fono/Acompanhamento';
+import { Gravações } from './pages/fono/Gravações';
 import { AcompanhamentoFamilia } from './pages/fono/Acompanhamento';
 import { HomeResponsavel, Jogar, Historico } from './pages/responsavel';
 
@@ -25,6 +26,11 @@ function Guard({ children, role }: { children: React.ReactNode; role?: 'fono' | 
 function AcompanhamentoFamiliaRoute() {
   const { id } = useParams();
   return <AcompanhamentoFamilia patientId={Number(id)} />;
+}
+
+function GravaçõesRoute() {
+  const { patientId } = useParams();
+  return <Gravações patientId={Number(patientId)} />;
 }
 
 export default function App() {
@@ -47,6 +53,7 @@ export default function App() {
             <Route path="/fono/pacientes/:id/perfil" element={<Perfil />} />
             <Route path="/fono/biblioteca" element={<Biblioteca />} />
             <Route path="/fono/acompanhamento/:patientId" element={<Acompanhamento />} />
+            <Route path="/fono/gravacoes/:patientId" element={<GravaçõesRoute />} />
             <Route path="/fono/fonemas" element={<Fonemas />} />
             <Route path="/fono/materiais" element={<Materiais />} />
             <Route path="/fono/relatorios" element={<Relatorios />} />

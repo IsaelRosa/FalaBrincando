@@ -5,6 +5,7 @@ import { Mascote, SettingsBar, SpeakButton } from '../../components/ui';
 import { speech } from '../../lib/speech';
 import { GameShell } from '../../games/GameShell';
 import { GameHost } from '../../games';
+import { Lembrete, ConfigLembrete } from '../../components/Lembrete';
 
 const GAME_EMOJI: Record<string, string> = {
   pontaria: '🎯', memoria: '🃏', o_que_e: '🗣️', intruso: '🔍',
@@ -61,6 +62,8 @@ export function HomeResponsavel() {
       </div>
 
       <div className="container">
+        {sel && <Lembrete patientId={sel} />}
+
         {patients.length > 1 && (
           <select value={sel ?? ''} onChange={(e) => setSel(Number(e.target.value))} style={{ maxWidth: 280, marginBottom: '1rem' }}>
             {patients.map((p) => <option key={p.id} value={p.id}>{p.apelido || p.nome}</option>)}
@@ -195,6 +198,8 @@ export function Historico() {
         <div className="row"><Mascote size={46} /><h1 style={{ margin: 0 }}>📅 Histórico e participação</h1></div>
         <Link to="/" className="btn">← Voltar</Link>
       </div>
+
+      {sel && <ConfigLembrete patientId={sel} />}
 
       {patients.length > 1 && (
         <select value={sel ?? ''} onChange={(e) => setSel(Number(e.target.value))} style={{ maxWidth: 260, margin: '.8rem 0' }}>

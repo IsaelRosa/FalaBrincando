@@ -14,22 +14,30 @@ infantil**, com acompanhamento profissional da fonoaudióloga.
 
 | Módulo | Situação |
 | --- | --- |
-| Trilha da articulação em escada (7 etapas) | ✅ com seleção livre de etapas, ordem personalizada e decisão clínica (avançar / manter / retomar) |
-| Cadastro de fonemas (S, Z, CH, J, R, L, X, LH, NH…) | ✅ com som/modelo de fala, posições, sílabas, combinações, palavras, frases, textos, instruções ao responsável, objetivos e critérios |
-| Jogo da Pontaria | ✅ |
-| Jogo da Memória | ✅ com dificuldade configurável |
-| O que é? O que é? | ✅ perguntas pré-cadastradas |
-| Encontre o Intruso | ✅ |
-| Álbum de Figuras | ✅ com repetição da demonstração |
-| Ficha de Vogais e Sílabas | ✅ |
-| Histórias Falantes | ✅ |
-| Instalação do Fonema | ✅ sequência inserida pela fono — sem geração automática |
-| Painel da fonoaudióloga | ✅ pacientes, fonemas, planos, atividades, materiais, relatórios |
+| Trilha da articulação em escada (7 etapas) | ✅ seleção livre de etapas, ordem personalizada, decisão clínica (avançar/manter/retomar) |
+| Cadastro de fonemas (S, Z, CH, J, R, L, X, LH, NH…) | ✅ som/modelo de fala, posições, sílabas, combinações, palavras, frases, textos, instruções, objetivos e critérios |
+| **Perfil infantil** | ✅ idade calculada, avatar, forma de comunicação (incl. AAC), necessidades, preferências, acessibilidade, metas |
+| **Biblioteca por habilidade** | ✅ 25 atividades em 6 habilidades, filtro por idade/nível, instanciar no plano com 1 clique |
+| **16 jogos** | ✅ Pontaria, Memória, O que é?, Intruso, Álbum, Vogais/Sílabas, Histórias, Instalação, Caça aos Sons, Mundo dos Animais, Monte a Palavra, História Interativa, Qual é a Figura?, Roleta, Missões, Trilha |
+| **Acompanhamento** | ✅ calendário, nível de ajuda (sozinha/pistas/ajuda), indicadores por habilidade, evolução própria |
+| **Gravação de voz** | ✅ com autorização registrada obrigatória, revisão clínica e controle de acesso |
+| **PWA instalável** | ✅ manifest, service worker e ícones (funciona offline no app shell) |
+| **Lembretes** | ✅ configuráveis, sem push e sem cobrança |
+| Painel da fonoaudióloga | ✅ pacientes, perfis, fonemas, planos, biblioteca, materiais, gravações, relatórios |
 | Painel do responsável + tela infantil | ✅ "Minha missão de hoje", sem penalidade para interrupção |
-| Importação de materiais (PDF/imagem/áudio/vídeo) | ✅ com direitos, filtro por categoria/fonema/posição/exercício e aprovação antes de liberar |
-| Relatórios | ✅ separam frequência, registros do responsável e evolução clínica; exporta em PDF (imprimir) |
-| Controle de acesso por perfil | ✅ JWT + verificação de vínculo por paciente |
+| Importação de materiais | ✅ direitos, filtros e aprovação antes de liberar |
+| Relatórios | ✅ separam frequência, registros do responsável e evolução clínica; exporta em PDF |
+| Controle de acesso por perfil | ✅ JWT + vínculo por paciente + áudio protegido |
 | Dados demonstrativos fictícios | ✅ |
+
+### Comandos de manutenção
+
+```bash
+npm run db:migrate    # cria/atualiza tabelas e colunas (idempotente)
+npm run db:users      # cria/corrige as senhas de demonstração
+npm run db:check      # diagnostica a conexão com o MySQL
+npm run db:seed       # (re)cria o banco do zero
+```
 
 ---
 
@@ -140,9 +148,11 @@ registro de tentativas e encerramento de sessão automaticamente.
 - **Materiais protegidos:** a importação exige declaração de direitos
   (`proprio` / `licenciado` / `autorizado`) e nota de origem. Nada é liberado à criança sem
   aprovação da fonoaudióloga.
-- **Voz:** o consentimento do responsável e a autorização específica para gravações ficam
-  registrados no paciente (`consent_at`, `voice_consent_at`). A versão atual **não grava a voz** —
-  o campo existe para a próxima etapa.
+- **Voz:** o botão de gravar **só aparece e funciona** com autorização registrada pela fonoaudióloga
+  (`voice_consent_at`). Sem ela, a API recusa o upload. As gravações ficam em pasta isolada por
+  conta, só a profissional dona do paciente acessa, e nunca há análise automática de pronúncia.
+- **Offline:** o service worker nunca faz cache de `/api` — dados de pacientes não ficam no
+  dispositivo.
 - **Exclusão (LGPD):** `DELETE /api/patients/:id` oculta os dados; a exclusão definitiva
   depende de solicitação formal, respeitando obrigações legais de guarda.
 - **Senhas:** bcrypt. **Tokens:** JWT. Em produção, defina um `JWT_SECRET` longo e aleatório.

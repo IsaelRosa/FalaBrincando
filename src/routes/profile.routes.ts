@@ -96,6 +96,52 @@ profileRouter.patch('/:id', async (req, res) => {
   res.json({ ok: true });
 });
 
+/**
+ * Lembretes configuráveis (item 8).
+ * Apenas dentro do app: sem push, sem cobrança e sem punição.
+ */
+profileRouter.get('/:id/lembrete', async (req, res) => {
+  const user = req.user as AuthUser;
+  if (!(await assertPatientAccess(user, Number(req.params.id))))
+    return res.status(403).json({ error: 'Sem acesso.' });
+  const p = await one<any>(
+    'SELECT lembrete_ativo, lembrete_hora, lembrete_dias, lembrete_texto FROM patients WHERE id=?',
+    [req.params.id]
+  );
+  res.json({
+    ativo: !!p?.lembrete_ativo,
+    hora: p?.lembrete_hora ?? '18:00',
+    dias: (p?.lembrete_dias ?? '1,2,3,4,5').split(',').map(Number),
+    texto: p?.lembrete_texto ?? 'Hora de brincar juntos? 💛',
+  });
+});
+
+profileRouter.patch('/:id/lembrete', async (req, res) => {
+  const user = req.user as AuthUser;
+  if (!(await assertPatientAccess(user, Number(req.params.id))))
+    return res.status(403).json({ error: 'Sem acesso.' });
+  const parsed = z
+    .object({
+      ativo: z.boolean().optional(),
+      hora: z.string().regex(/^\d{2}:\d{2}$/, 'Horário inválido').optional(),
+      dias: z.array(z.number().int().min(0).max(6)).optional(),
+      texto: z.string().max(200).optional(),
+    })
+    .safeParse(req.body);
+  if (!parsed.success) return res.status(400).json({ error: parsed.error.issues[0].message });
+  const d = parsed.data;
+  await run(
+    `UPDATE patients SET
+       lembrete_ativo=COALESCE(?,lembrete_ativo),
+       lembrete_hora=COALESCE(?,lembrete_hora),
+       lembrete_dias=COALESCE(?,lembrete_dias),
+       lembrete_texto=COALESCE(?,lembrete_texto)
+     WHERE id=?`,
+    [d.ativo ?? null, d.hora ?? null, d.dias ? d.dias.join(',') : null, d.texto ?? null, req.params.id]
+  );
+  res.json({ ok: true });
+});
+
 /** Metas terapêuticas (itens individualizáveis). */
 profileRouter.post('/:id/metas', requireRole('fono'), async (req, res) => {
   const user = req.user as AuthUser;

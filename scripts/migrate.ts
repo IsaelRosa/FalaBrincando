@@ -20,6 +20,10 @@ const COLUNAS: Record<string, Col[]> = {
   // ---------- Perfil infantil (item 3 do escopo) ----------
   patients: [
     { nome: 'avatar', tipo: 'VARCHAR(80)', extra: "DEFAULT '🦜'" },
+    { nome: 'lembrete_ativo', tipo: 'TINYINT(1)', extra: 'DEFAULT 0' },
+    { nome: 'lembrete_hora', tipo: 'VARCHAR(5)', extra: "DEFAULT '18:00'" },
+    { nome: 'lembrete_dias', tipo: 'VARCHAR(60)', extra: "DEFAULT '1,2,3,4,5'" },
+    { nome: 'lembrete_texto', tipo: 'VARCHAR(200)' },
     { nome: 'tipo_comunicacao', tipo: 'VARCHAR(40)', extra: "DEFAULT 'oral'" },
     { nome: 'necessidades', tipo: 'JSON' },
     { nome: 'preferencias', tipo: 'JSON' },
@@ -60,6 +64,27 @@ async function temTabela(conn: mysql.Connection, tabela: string) {
   );
   return (r as any)[0].n > 0;
 }
+
+const TABELA_GRAVACOES = `
+CREATE TABLE IF NOT EXISTS recordings (
+  id            INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  patient_id    INT UNSIGNED NOT NULL,
+  activity_id   INT UNSIGNED NULL,
+  uploaded_by   INT UNSIGNED NOT NULL,
+  file_path     VARCHAR(400) NOT NULL,
+  mime_type     VARCHAR(60) NOT NULL DEFAULT 'audio/webm',
+  duracao_sec   INT NULL,
+  label         VARCHAR(120) NULL,
+  -- RLS lógica: só a fonoaudióloga dona do paciente vê
+  status        ENUM('pendente','revisto') NOT NULL DEFAULT 'pendente',
+  reviewed_at   TIMESTAMP NULL,
+  reviewed_by   INT UNSIGNED NULL,
+  observacao    TEXT NULL,
+  created_at    TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  INDEX idx_grav_pat (patient_id, created_at),
+  CONSTRAINT fk_grav_pat FOREIGN KEY (patient_id) REFERENCES patients(id) ON DELETE CASCADE,
+  CONSTRAINT fk_grav_usr FOREIGN KEY (uploaded_by) REFERENCES users(id)
+) ENGINE=InnoDB`;
 
 const TABELA_BIBLIOTECA = `
 CREATE TABLE IF NOT EXISTS activity_library (
@@ -110,6 +135,9 @@ async function main() {
 
   await conn.query(TABELA_BIBLIOTECA);
   console.log('✔ activity_library');
+
+  await conn.query(TABELA_GRAVACOES);
+  console.log('✔ recordings');
 
   await conn.query(
     "INSERT IGNORE INTO game_types (slug,nome,descricao,sort_order) VALUES " +

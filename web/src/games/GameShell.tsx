@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { api } from '../lib/api';
+import { Gravador } from '../components/Gravador';
 
 export interface ActivityPlan {
   id: number;
@@ -138,6 +139,7 @@ export function GameShell({ patientId, activityId, onExit, children }: Props & {
         </div>
         <span className="hint">Serve para a fonoaudióloga acompanhar a evolução. Não conta nota.</span>
       </div>
+      <Gravador patientId={patientId} activityId={activityId} />
     </div>
   );
 }
