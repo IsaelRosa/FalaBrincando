@@ -35,8 +35,64 @@ authRouter.post('/login', async (req, res) => {
     });
   }
 
-  const ok = await bcrypt.compare(password, user.password_hash);
-  if (!ok) return res.status(401).json({ error: 'E-mail ou senha incorretos.' });
+  /*
+   * Controle de acesso do responsável:
+   *  - a senha definida pela fonoaudióloga tem prioridade sobre a da conta;
+   *  - acesso suspenso, encerrado ou fora da validade impede o login.
+   */
+  let senhaDaFono = false;
+  let temSenhaDaFono = false;
+  if (user.role === 'responsavel') {
+    const vinculos = await q<any>(
+      `SELECT g.status, g.valido_de, g.valido_ate, g.senha_hash, p.nome AS paciente
+       FROM patient_guardians g JOIN patients p ON p.id = g.patient_id
+       WHERE g.guardian_id = ?`,
+      [user.id]
+    );
+
+    if (!vinculos.length) {
+      return res.status(403).json({
+        error: 'Seu acesso ainda não foi liberado pela fonoaudióloga.',
+      });
+    }
+
+    const hoje = new Date().toISOString().slice(0, 10);
+    const suspenso = vinculos.find((v) => v.status !== 'ativo');
+    if (suspenso) {
+      return res.status(403).json({
+        error:
+          suspenso.status === 'encerrado'
+            ? 'Seu acesso foi encerrado. Fale com a fonoaudióloga.'
+            : 'Seu acesso está suspenso temporariamente. Fale com a fonoaudióloga.',
+      });
+    }
+
+    const vencidos = vinculos.filter((v) => v.valido_ate && String(v.valido_ate) < hoje);
+    if (vencidos.length === vinculos.length) {
+      return res.status(403).json({
+        error: 'O período de acompanhamento desta criança terminou. Fale com a fonoaudióloga.',
+      });
+    }
+
+    // Senha definida pela fonoaudióloga passa a ser a ÚNICA válida.
+    const comSenha = vinculos.filter((v) => v.senha_hash);
+    if (comSenha.length) {
+      const bate = await Promise.all(comSenha.map((v) => bcrypt.compare(password, v.senha_hash)));
+      temSenhaDaFono = true;
+      senhaDaFono = bate.some(Boolean);
+    }
+  }
+
+  // Se a fonoaudióloga definiu senha, ela é a ÚNICA aceita.
+  const contaOk = temSenhaDaFono
+    ? senhaDaFono
+    : await bcrypt.compare(password, user.password_hash);
+  if (!contaOk)
+    return res.status(401).json({
+      error: temSenhaDaFono
+        ? 'Senha incorreta. A fonoaudióloga definiu uma senha específica para este acesso.'
+        : 'E-mail ou senha incorretos.',
+    });
 
   const authUser: AuthUser = {
     id: user.id,

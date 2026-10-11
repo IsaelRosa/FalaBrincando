@@ -13,6 +13,7 @@ import { catalogRouter } from './routes/catalog.routes.js';
 import { libraryRouter } from './routes/library.routes.js';
 import { profileRouter } from './routes/profile.routes.js';
 import { recordingRouter } from './routes/recordings.routes.js';
+import { guardianRouter } from './routes/guardians.routes.js';
 
 const app = express();
 app.use(cors({ origin: env.corsOrigin === '*' ? true : env.corsOrigin.split(',') }));
@@ -37,6 +38,7 @@ app.use('/api/catalog', catalogRouter);
 app.use('/api/library', libraryRouter);
 app.use('/api/profile', profileRouter);
 app.use('/api/recordings', recordingRouter);
+app.use('/api/guardians', guardianRouter);
 
 // Servir o build do front (SPA) — em produção no mesmo domínio/host
 // Build do front fica em web/dist (mesma raiz do projeto)

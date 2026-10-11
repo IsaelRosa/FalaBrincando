@@ -11,6 +11,7 @@ import { Biblioteca } from './pages/fono/Biblioteca';
 import { Perfil } from './pages/fono/Perfil';
 import { Acompanhamento } from './pages/fono/Acompanhamento';
 import { Gravações } from './pages/fono/Gravações';
+import { Responsaveis } from './pages/fono/Responsaveis';
 import { AcompanhamentoFamilia } from './pages/fono/Acompanhamento';
 import { HomeResponsavel, Jogar, Historico } from './pages/responsavel';
 
@@ -31,6 +32,11 @@ function AcompanhamentoFamiliaRoute() {
 function GravaçõesRoute() {
   const { patientId } = useParams();
   return <Gravações patientId={Number(patientId)} />;
+}
+
+function ResponsaveisRoute() {
+  const { patientId } = useParams();
+  return <Responsaveis patientId={Number(patientId)} />;
 }
 
 export default function App() {
@@ -54,6 +60,7 @@ export default function App() {
             <Route path="/fono/biblioteca" element={<Biblioteca />} />
             <Route path="/fono/acompanhamento/:patientId" element={<Acompanhamento />} />
             <Route path="/fono/gravacoes/:patientId" element={<GravaçõesRoute />} />
+            <Route path="/fono/responsaveis/:patientId" element={<ResponsaveisRoute />} />
             <Route path="/fono/fonemas" element={<Fonemas />} />
             <Route path="/fono/materiais" element={<Materiais />} />
             <Route path="/fono/relatorios" element={<Relatorios />} />

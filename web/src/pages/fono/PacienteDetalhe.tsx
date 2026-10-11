@@ -54,6 +54,7 @@ export function PacienteDetalhe() {
           <Link className="btn ghost" to={`/fono/pacientes/${patientId}/perfil`}>👶 Perfil</Link>
           <Link className="btn ghost" to={`/fono/acompanhamento/${patientId}`}>📈 Acompanhamento</Link>
           <Link className="btn ghost" to={`/fono/gravacoes/${patientId}`}>🎙️ Gravações</Link>
+          <Link className="btn ghost" to={`/fono/responsaveis/${patientId}`}>👪 Responsáveis</Link>
           <Link className="btn ghost" to={`/fono/relatorios/${patientId}`}>📊 Relatório</Link>
         </div>
       </div>
