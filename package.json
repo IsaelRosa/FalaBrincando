@@ -13,7 +13,8 @@
     "postinstall": "npm install --prefix web",
     "db:seed": "tsx scripts/seed.ts",
     "db:check": "tsx scripts/check-db.ts",
-    "db:users": "tsx scripts/setup-users.ts"
+    "db:users": "tsx scripts/setup-users.ts",
+    "db:migrate": "tsx scripts/migrate.ts"
   },
   "dependencies": {
     "bcryptjs": "^3.0.2",

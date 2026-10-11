@@ -43,13 +43,16 @@ export function PacienteDetalhe() {
         <div className="row">
           <Mascote size={48} />
           <div>
-            <h1 style={{ margin: 0 }}>{data.patient.apelido || data.patient.nome}</h1>
+            <h1 style={{ margin: 0 }}>{data.patient.avatar ?? '🦜'} {data.patient.apelido || data.patient.nome}</h1>
             <p className="muted" style={{ margin: 0 }}>
               {data.patient.nome} · <Link to="/fono/pacientes">voltar</Link>
             </p>
           </div>
         </div>
-        <Link className="btn ghost" to={`/fono/relatorios/${patientId}`}>📊 Relatório</Link>
+        <div className="row">
+          <Link className="btn ghost" to={`/fono/pacientes/${patientId}/perfil`}>👶 Perfil</Link>
+          <Link className="btn ghost" to={`/fono/relatorios/${patientId}`}>📊 Relatório</Link>
+        </div>
       </div>
 
       {msg && <div className="alert ok">{msg}</div>}

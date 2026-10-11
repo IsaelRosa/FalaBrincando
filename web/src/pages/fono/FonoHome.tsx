@@ -71,6 +71,10 @@ export function FonoHome() {
                   <span className="pill blue">{p.n_atividades} atividades</span>
                 </div>
                 <p className="muted" style={{ margin: '.4rem 0 0' }}>{p.nome}</p>
+                <span className="row" style={{ marginTop: '.6rem' }}>
+                  <Link to={`/fono/pacientes/${p.id}/perfil`} className="btn ghost small" onClick={(e) => e.stopPropagation()}>Perfil</Link>
+                  <Link to={`/fono/pacientes/${p.id}`} className="btn small" onClick={(e) => e.stopPropagation()}>Plano</Link>
+                </span>
               </Link>
             ))}
           </div>
@@ -87,6 +91,11 @@ export function FonoHome() {
           <div style={{ fontSize: '2.2rem' }}>📁</div>
           <strong>Biblioteca e importação</strong>
           <p className="muted" style={{ margin: '.3rem 0 0' }}>PDFs, imagens, áudios e fichas</p>
+        </Link>
+        <Link to="/fono/biblioteca" className="card center" style={{ marginBottom: 0 }}>
+          <div style={{ fontSize: '2.2rem' }}>📚</div>
+          <strong>Biblioteca de atividades</strong>
+          <p className="muted" style={{ margin: '.3rem 0 0' }}>Por habilidade, idade e dificuldade</p>
         </Link>
         <Link to="/fono/relatorios" className="card center" style={{ marginBottom: 0 }}>
           <div style={{ fontSize: '2.2rem' }}>📊</div>

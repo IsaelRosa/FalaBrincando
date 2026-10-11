@@ -15,6 +15,7 @@ export function Layout() {
               <>
                 <NavLink to="/fono" end>Painel</NavLink>
                 <NavLink to="/fono/pacientes">Pacientes</NavLink>
+                <NavLink to="/fono/biblioteca">Biblioteca</NavLink>
                 <NavLink to="/fono/fonemas">Fonemas</NavLink>
                 <NavLink to="/fono/materiais">Materiais</NavLink>
               </>

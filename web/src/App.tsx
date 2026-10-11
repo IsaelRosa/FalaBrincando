@@ -7,6 +7,8 @@ import { PacienteDetalhe } from './pages/fono/PacienteDetalhe';
 import { Fonemas } from './pages/fono/Fonemas';
 import { Materiais } from './pages/fono/Materiais';
 import { Relatorios, RelatorioDetalhe } from './pages/fono/Relatorios';
+import { Biblioteca } from './pages/fono/Biblioteca';
+import { Perfil } from './pages/fono/Perfil';
 import { HomeResponsavel, Jogar, Historico } from './pages/responsavel';
 
 function Guard({ children, role }: { children: React.ReactNode; role?: 'fono' | 'responsavel' }) {
@@ -33,6 +35,8 @@ export default function App() {
           <Route element={<Guard role="fono"><Layout /></Guard>}>
             <Route path="/fono" element={<FonoHome />} />
             <Route path="/fono/pacientes/:id" element={<PacienteDetalhe />} />
+            <Route path="/fono/pacientes/:id/perfil" element={<Perfil />} />
+            <Route path="/fono/biblioteca" element={<Biblioteca />} />
             <Route path="/fono/fonemas" element={<Fonemas />} />
             <Route path="/fono/materiais" element={<Materiais />} />
             <Route path="/fono/relatorios" element={<Relatorios />} />
