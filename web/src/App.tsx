@@ -42,41 +42,61 @@ function ResponsaveisRoute() {
 }
 
 export default function App() {
-  const { user } = useAuth();
   return (
     <AuthProvider>
       <BrowserRouter>
-        <Routes>
-          <Route path="/entrar" element={<Login />} />
-          <Route path="/criar-conta" element={<CriarConta />} />
-
-          {/* Página inicial pública */}
-          <Route path="/" element={user ? <Navigate to="/inicio" replace /> : <Landing />} />
-
-          {/* Painel do responsável / tela da criança */}
-          <Route path="/inicio" element={<Guard><HomeResponsavel /></Guard>} />
-          <Route path="/jogo/:id" element={<Guard><Jogar /></Guard>} />
-          <Route path="/historico" element={<Guard><Historico /></Guard>} />
-          <Route path="/acompanhamento/:id" element={<Guard><AcompanhamentoFamiliaRoute /></Guard>} />
-
-          {/* Painel profissional */}
-          <Route element={<Guard role="fono"><Layout /></Guard>}>
-            <Route path="/fono" element={<FonoHome />} />
-            <Route path="/fono/pacientes/:id" element={<PacienteDetalhe />} />
-            <Route path="/fono/pacientes/:id/perfil" element={<Perfil />} />
-            <Route path="/fono/biblioteca" element={<Biblioteca />} />
-            <Route path="/fono/acompanhamento/:patientId" element={<Acompanhamento />} />
-            <Route path="/fono/gravacoes/:patientId" element={<GravaçõesRoute />} />
-            <Route path="/fono/responsaveis/:patientId" element={<ResponsaveisRoute />} />
-            <Route path="/fono/fonemas" element={<Fonemas />} />
-            <Route path="/fono/materiais" element={<Materiais />} />
-            <Route path="/fono/relatorios" element={<Relatorios />} />
-            <Route path="/fono/relatorios/:patientId" element={<RelatorioDetalhe />} />
-          </Route>
-
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
+        <Rotas />
       </BrowserRouter>
     </AuthProvider>
+  );
+}
+
+/**
+ * Fica dentro do AuthProvider para poder ler o contexto de autenticação.
+ * (Chamar useAuth() fora do provider retorna null.)
+ */
+function Rotas() {
+  const { user, loading } = useAuth();
+
+  if (loading)
+    return (
+      <div className="auth-wrap">
+        <div style={{ textAlign: 'center' }}>
+          <h2 style={{ color: 'var(--navy)' }}>Carregando…</h2>
+        </div>
+      </div>
+    );
+
+  return (
+    <Routes>
+      <Route path="/entrar" element={<Login />} />
+      <Route path="/criar-conta" element={<CriarConta />} />
+
+      {/* Página inicial pública — quem já entrou vai direto para o app */}
+      <Route path="/" element={user ? <Navigate to="/inicio" replace /> : <Landing />} />
+
+      {/* Painel do responsável / tela da criança */}
+      <Route path="/inicio" element={<Guard><HomeResponsavel /></Guard>} />
+      <Route path="/jogo/:id" element={<Guard><Jogar /></Guard>} />
+      <Route path="/historico" element={<Guard><Historico /></Guard>} />
+      <Route path="/acompanhamento/:id" element={<Guard><AcompanhamentoFamiliaRoute /></Guard>} />
+
+      {/* Painel profissional */}
+      <Route element={<Guard role="fono"><Layout /></Guard>}>
+        <Route path="/fono" element={<FonoHome />} />
+        <Route path="/fono/pacientes/:id" element={<PacienteDetalhe />} />
+        <Route path="/fono/pacientes/:id/perfil" element={<Perfil />} />
+        <Route path="/fono/biblioteca" element={<Biblioteca />} />
+        <Route path="/fono/acompanhamento/:patientId" element={<Acompanhamento />} />
+        <Route path="/fono/gravacoes/:patientId" element={<GravaçõesRoute />} />
+        <Route path="/fono/responsaveis/:patientId" element={<ResponsaveisRoute />} />
+        <Route path="/fono/fonemas" element={<Fonemas />} />
+        <Route path="/fono/materiais" element={<Materiais />} />
+        <Route path="/fono/relatorios" element={<Relatorios />} />
+        <Route path="/fono/relatorios/:patientId" element={<RelatorioDetalhe />} />
+      </Route>
+
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
   );
 }
