@@ -68,16 +68,20 @@ type Card = { id: number; pair: number; emoji: string; word: string; flip: boole
 
 export function Memoria({ activity, ctx }: { activity: ActivityPlan; ctx: GameCtx }) {
   const cfg = activity.config ?? {};
-  // Aceita "pairs" e "pares" (a biblioteca pode usar as duas grafias).
-  const paresBrutos: string[] = cfg.words ?? cfg.pares ?? cfg.pairs ?? [];
-  const pares = Number(cfg.pairs ?? paresBrutos.length ?? 6) || 6;
-  const palavras: string[] = useMemo(
-    () =>
-      paresBrutos.length
-        ? paresBrutos
-        : (activity.words ?? []).map((w: any) => w.word).slice(0, pares),
-    [activity, pares]
-  );
+  /**
+   * Aceita três formatos de configuração:
+   *   { words: ["sol","lua"] }                       → lista simples
+   *   { pares: [["sol","bol"],["casa","masa"]] }     → pares aninhados (rimas)
+   *   { pairs: [...] }                                → par a par
+   * O par mais flattenado vira a lista de cartas do jogo.
+   */
+  const palavras: string[] = useMemo(() => {
+    const bruto = cfg.words ?? cfg.pares ?? cfg.pairs ?? [];
+    const lista: string[] = (Array.isArray(bruto) ? bruto : []).flat().filter(Boolean).map(String);
+    if (lista.length) return lista;
+    return (activity.words ?? []).map((w: any) => w.word).filter(Boolean);
+  }, [activity, cfg]);
+  const pares = Math.max(1, Math.ceil(palavras.length / 2));
   const [cards, setCards] = useState<Card[]>([]);
   const [sel, setSel] = useState<number[]>([]);
   const [acertos, setAcertos] = useState(0);

@@ -61,7 +61,7 @@ VALUES
  'Formula pedido com substantivo em 4 de 5 situações.',
  'Ofereça o modelo «Eu quero...» se a criança iniciar pouco.',
  'Qualquer tentativa de comunicar é válida; celebre.',
- '{"situações":[{"c":"loja","p":"Você está na loja e quer uma bola. O que você diz?","resposta":"Eu quero uma bola.","opcoes":["Eu quero uma bola.","A bola.","Ali."]},{"c":"casa","p":"Você está em casa e quer a mamãe. O que você diz?","resposta":"Mãe, aqui!","opcoes":["Mãe, aqui!","Mãe.","Aqui."]},{"c":"escola","p":"Você precisa de ajuda na escola. O que você diz?","resposta":"Pode me ajudar?","opcoes":["Pode me ajudar?","Socorro!","Ajuda."]}]}', NULL,
+ '{"situacoes":[{"c":"loja","p":"Você está na loja e quer uma bola. O que você diz?","resposta":"Eu quero uma bola.","opcoes":["Eu quero uma bola.","A bola.","Ali."]},{"c":"casa","p":"Você está em casa e quer a mamãe. O que você diz?","resposta":"Mãe, aqui!","opcoes":["Mãe, aqui!","Mãe.","Aqui."]},{"c":"escola","p":"Você precisa de ajuda na escola. O que você diz?","resposta":"Pode me ajudar?","opcoes":["Pode me ajudar?","Socorro!","Ajuda."]}]}', NULL,
  '["funcional","pedido"]'),
 
 (22, NULL,'trilha','Trilha da Aventura — 5 etapas','articulacao',
