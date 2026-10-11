@@ -67,11 +67,15 @@ export function Pontaria({ activity, ctx }: { activity: ActivityPlan; ctx: GameC
 type Card = { id: number; pair: number; emoji: string; word: string; flip: boolean; done: boolean };
 
 export function Memoria({ activity, ctx }: { activity: ActivityPlan; ctx: GameCtx }) {
-  const pares = Number(activity.config?.pairs ?? 6);
+  const cfg = activity.config ?? {};
+  // Aceita "pairs" e "pares" (a biblioteca pode usar as duas grafias).
+  const paresBrutos: string[] = cfg.words ?? cfg.pares ?? cfg.pairs ?? [];
+  const pares = Number(cfg.pairs ?? paresBrutos.length ?? 6) || 6;
   const palavras: string[] = useMemo(
     () =>
-      activity.config?.words ??
-      (activity.words ?? []).map((w: any) => w.word).slice(0, pares),
+      paresBrutos.length
+        ? paresBrutos
+        : (activity.words ?? []).map((w: any) => w.word).slice(0, pares),
     [activity, pares]
   );
   const [cards, setCards] = useState<Card[]>([]);
