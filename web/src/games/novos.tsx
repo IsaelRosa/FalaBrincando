@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import type { GameCtx, ActivityPlan } from './GameShell';
 import { speech } from '../lib/speech';
-import { AudioButton, emojiFor } from '../components/ui';
+import { AudioButton } from '../components/ui';
+import { Figura } from '../components/figuras';
 import type { ReactNode } from 'react';
 
 /* Palavras de apoio quando a atividade vem sem configuração específica. */
@@ -80,7 +81,7 @@ export function CacaSons({ activity, ctx }: { activity: ActivityPlan; ctx: GameC
           return (
             <button key={fig} className={`btn ${achou ? 'green' : 'secondary'}`} style={{ flexDirection: 'column', height: 'auto', padding: '1rem' }}
               onClick={() => clicar(fig)}>
-              <span style={{ fontSize: '2.5rem' }}>{emojiFor(fig)}</span>
+              <span style={{ fontSize: '2.5rem' }}><Figura word={fig} style={{ fontSize: '2.5rem' }} /></span>
               <small>{achou ? '✓ ' : ''}{fig}</small>
             </button>
           );
@@ -120,7 +121,7 @@ export function MundoAnimais({ activity, ctx }: { activity: ActivityPlan; ctx: G
       <h2 className="center">🐾 Mundo dos Animais</h2>
       <p className="center muted">Ouça, veja e diga o nome do animal.</p>
       <div className="game-area" style={{ margin: '1rem 0', textAlign: 'center' }}>
-        <div className="figura" style={{ fontSize: '5rem' }}>{emojiFor(animal)}</div>
+        <div className="figura" style={{ fontSize: '5rem' }}><Figura word={animal} style={{ fontSize: '5rem' }} /></div>
         <div className="palavra-grande">{visto.includes(atual) ? animal : '?'.repeat(Math.min(animal.length, 5))}</div>
         <div className="row" style={{ justifyContent: 'center' }}>
           <button className="btn sun" onClick={() => speech.say(animal, { rate: 0.7 })}>🔊 Ouvir o nome</button>
@@ -132,7 +133,7 @@ export function MundoAnimais({ activity, ctx }: { activity: ActivityPlan; ctx: G
         {lista.map((a, i) => (
           <button key={a + i} className={`btn ${i === atual ? '' : 'ghost'}`} style={{ flexDirection: 'column' }}
             onClick={() => setAtual(i)}>
-            <span style={{ fontSize: '2rem' }}>{emojiFor(a)}</span>
+            <span style={{ fontSize: '2rem' }}><Figura word={a} style={{ fontSize: '2rem' }} /></span>
             <small>{visto.includes(i) ? a : '???'}</small>
           </button>
         ))}
@@ -184,7 +185,7 @@ export function MontePalavra({ activity, ctx }: { activity: ActivityPlan; ctx: G
       <h2 className="center">🧩 Monte a Palavra</h2>
       <p className="center muted">Toque nas sílabas na ordem certa para formar a palavra.</p>
       <div className="center" style={{ margin: '1rem 0' }}>
-        <div className="figura">{emojiFor(palavra)}</div>
+        <div className="figura"><Figura word={palavra} /></div>
         <div className="palavra-grande">
           {montada.length ? montada.map((x) => silabas[x]).join('-') : '＿'.repeat(silabas.length)}
         </div>
@@ -340,7 +341,7 @@ export function QualFigura({ activity, ctx }: { activity: ActivityPlan; ctx: Gam
               await ctx.registerAttempt({ ref: x.palavra, result: 'nao_avaliado' });
               setI(itens.indexOf(x) + 1);
             }}>
-            <span style={{ fontSize: '2.5rem' }}>{emojiFor(x.palavra)}</span>
+            <span style={{ fontSize: '2.5rem' }}><Figura word={x.palavra} style={{ fontSize: '2.5rem' }} /></span>
             <small>{x.palavra}</small>
           </button>
         ))}
@@ -383,7 +384,7 @@ export function Roleta({ activity, ctx }: { activity: ActivityPlan; ctx: GameCtx
       <p className="center muted">Gire a roleta e pratique a palavra sorteada.</p>
       <div className="center" style={{ margin: '1.5rem 0' }}>
         <div className={`figura ${girando ? 'float' : ''}`} style={{ borderRadius: '50%', fontSize: '3rem' }}>
-          {atual ? emojiFor(atual) : '🎯'}
+          {atual ? <Figura word={atual} /> : '🎯'}
         </div>
         <div className="palavra-grande">{atual ?? 'gire a roleta!'}</div>
         {atual && <AudioButton word={atual} />}
@@ -397,7 +398,7 @@ export function Roleta({ activity, ctx }: { activity: ActivityPlan; ctx: GameCtx
         <>
           <h3 className="center" style={{ marginTop: '1.5rem' }}>Já sorteadas ({palavras.length})</h3>
           <div className="row" style={{ justifyContent: 'center' }}>
-            {palavras.map((p) => <span key={p} className="pill green">{emojiFor(p)} {p}</span>)}
+            {palavras.map((p) => <span key={p} className="pill green"><Figura word={p} /> {p}</span>)}
           </div>
         </>
       )}

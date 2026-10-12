@@ -2,7 +2,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { GameCtx, ActivityPlan } from './GameShell';
 import { JOGOS_NOVOS } from './novos';
 import { speech } from '../lib/speech';
-import { AudioButton, emojiFor } from '../components/ui';
+import { AudioButton } from '../components/ui';
+import { Figura } from '../components/figuras';
 import type { ComponentType } from 'react';
 
 /* ============================================================
@@ -32,7 +33,7 @@ export function Pontaria({ activity, ctx }: { activity: ActivityPlan; ctx: GameC
       <p className="center muted">Ouça, diga e marque um círculo para cada tentativa.</p>
       <div className="row" style={{ justifyContent: 'center', margin: '1rem 0' }}>
         <div className="figura" onClick={() => speech.say(word)}>
-          {emojiFor(word)}
+          <Figura word={word} />
         </div>
         <div>
           <div className="palavra-grande">{word}</div>
@@ -64,7 +65,7 @@ export function Pontaria({ activity, ctx }: { activity: ActivityPlan; ctx: GameC
 /* ============================================================
    2. JOGO DA MEMÓRIA
    ============================================================ */
-type Card = { uid: string; pair: number; emoji: string; word: string; flip: boolean; done: boolean };
+type Card = { uid: string; pair: number; word: string; flip: boolean; done: boolean };
 
 export function Memoria({ activity, ctx }: { activity: ActivityPlan; ctx: GameCtx }) {
   const cfg = activity.config ?? {};
@@ -89,7 +90,7 @@ export function Memoria({ activity, ctx }: { activity: ActivityPlan; ctx: GameCt
 
   const montar = useCallback(() => {
     // Até 6 pares cabem bem na grade; evita telas polvilhadas.
-    const base = palavras.slice(0, 6).map((w, i) => ({ pair: i, emoji: emojiFor(w), word: w }));
+    const base = palavras.slice(0, 6).map((w, i) => ({ pair: i, word: w }));
     // Cada cópia precisa de um identificador PRÓPRIO (uid único).
     const lista: Card[] = [
       ...base.map((c) => ({ ...c, uid: `a${c.pair}-${c.word}`, flip: false, done: false })),
@@ -174,7 +175,7 @@ export function Memoria({ activity, ctx }: { activity: ActivityPlan; ctx: GameCt
           >
             {c.flip ? (
               <>
-                <span className="carta-emoji">{c.emoji}</span>
+                <Figura word={c.word} className="carta-emoji" />
                 <small className="carta-word">{c.word}</small>
               </>
             ) : (
@@ -227,7 +228,7 @@ export function OQueE({ activity, ctx }: { activity: ActivityPlan; ctx: GameCtx 
         </div>
         {revelado && (
           <div className="center" style={{ marginTop: '1rem' }}>
-            <div className="figura">{emojiFor(p.a)}</div>
+            <div className="figura"><Figura word={p.a} /></div>
             <div className="palavra-grande">{p.a}</div>
             <AudioButton word={p.a} />
           </div>
@@ -266,7 +267,7 @@ export function Intruso({ activity, ctx }: { activity: ActivityPlan; ctx: GameCt
             style={{ flexDirection: 'column', height: 'auto', padding: '1rem' }}
             onClick={() => pick(item)}
           >
-            <span style={{ fontSize: '2.5rem' }}>{emojiFor(item)}</span>
+            <span style={{ fontSize: '2.5rem' }}><Figura word={item} style={{ fontSize: '2.5rem' }} /></span>
             {item}
           </button>
         ))}
@@ -302,7 +303,7 @@ export function Album({ activity, ctx }: { activity: ActivityPlan; ctx: GameCtx 
     <>
       <h2 className="center">📖 Álbum de Figuras</h2>
       <div className="center" style={{ margin: '1rem 0' }}>
-        <div className="figura">{emojiFor(atual)}</div>
+        <div className="figura"><Figura word={atual} /></div>
         <div className="palavra-grande">{atual}</div>
         <AudioButton word={atual} />
         <div className="row" style={{ justifyContent: 'center', marginTop: '.5rem' }}>
@@ -312,7 +313,7 @@ export function Album({ activity, ctx }: { activity: ActivityPlan; ctx: GameCtx 
       <div className="grid cols-4">
         {palavras.map((w) => (
           <button key={w} className="btn secondary" onClick={() => mostrar(w)} style={{ flexDirection: 'column' }}>
-            <span style={{ fontSize: '2rem' }}>{emojiFor(w)}</span>
+            <span style={{ fontSize: '2rem' }}><Figura word={w} style={{ fontSize: '2rem' }} /></span>
             <small>{vistos[w] ? '✓ ' : ''}{w}</small>
           </button>
         ))}

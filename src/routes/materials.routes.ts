@@ -139,6 +139,66 @@ materialRouter.patch('/:id/status', requireRole('fono'), async (req, res) => {
   res.json({ ok: true });
 });
 
+/**
+ * Lista compacta para o app: somente materiais aprovados.
+ * A criança não recebe dados do banco: só título, tipo e arquivo.
+ */
+materialRouter.get('/catalogo/figuras', requireAuth, async (req, res) => {
+  const user = req.user as AuthUser;
+
+  // Fono vê os dela; responsável vê os materiais das fonos ligadas aos seus filhos.
+  const linhas = await q<any>(
+    `SELECT DISTINCT m.id, m.title, m.kind, m.category, m.phoneme_id, m.file_path, m.mime_type
+     FROM materials m
+     WHERE m.status='aprovado' AND m.kind IN ('imagem','audio')
+       AND (
+         m.fono_id IS NULL
+         OR m.fono_id = ?
+         OR (? = 'responsavel' AND m.fono_id IN (
+              SELECT DISTINCT p.owner_fono_id
+              FROM patients p
+              JOIN patient_guardians g ON g.patient_id = p.id
+              WHERE g.guardian_id = ?
+         ))
+       )`,
+    [user.id, user.role, user.id]
+  );
+
+  const figs = linhas.map((m: any) => ({
+    id: m.id,
+    chave: String(m.title ?? '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z]/g, ''),
+    title: m.title,
+    kind: m.kind,
+    url: `/api/materials/arquivo/${m.id}`,
+  }));
+
+  res.json(figs);
+});
+
+/** Serve o arquivo — só para quem tem vínculo com a fono dona do material. */
+materialRouter.get('/arquivo/:id', requireAuth, async (req, res) => {
+  const user = req.user as AuthUser;
+  const m = await one<any>('SELECT * FROM materials WHERE id=?', [req.params.id]);
+  if (!m || m.status !== 'aprovado') return res.status(404).end();
+  if (!m.file_path || !fs.existsSync(m.file_path)) return res.status(404).end();
+
+  // Material global (sem dono) é liberado; material de fono, só para os vinculados.
+  if (m.fono_id && m.fono_id !== user.id) {
+    if (user.role !== 'responsavel') return res.status(403).end();
+    const vinculo = await one<{ n: number }>(
+      `SELECT COUNT(*) n FROM patients p
+       JOIN patient_guardians g ON g.patient_id = p.id
+       WHERE p.owner_fono_id=? AND g.guardian_id=?`,
+      [m.fono_id, user.id]
+    );
+    if (!vinculo || !vinculo.n) return res.status(403).end();
+  }
+
+  res.type(m.mime_type ?? 'application/octet-stream');
+  res.setHeader('Cache-Control', 'private, max-age=86400');
+  res.sendFile(path.resolve(m.file_path));
+});
+
 materialRouter.delete('/:id', requireRole('fono'), async (req, res) => {
   const user = req.user as AuthUser;
   const m = await one<any>('SELECT * FROM materials WHERE id=?', [req.params.id]);
