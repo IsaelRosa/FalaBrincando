@@ -44,7 +44,7 @@ authRouter.post('/login', async (req, res) => {
   let temSenhaDaFono = false;
   if (user.role === 'responsavel') {
     const vinculos = await q<any>(
-      `SELECT g.status, g.valido_de, g.valido_ate, g.senha_hash, p.nome AS paciente
+      `SELECT g.status, g.valido_de, g.valido_ate, g.senha_hash, p.nome AS paciente, p.deleted_at
        FROM patient_guardians g JOIN patients p ON p.id = g.patient_id
        WHERE g.guardian_id = ?`,
       [user.id]
@@ -52,25 +52,37 @@ authRouter.post('/login', async (req, res) => {
 
     if (!vinculos.length) {
       return res.status(403).json({
-        error: 'Seu acesso ainda não foi liberado pela fonoaudióloga.',
+        error:
+          'Seu acesso ainda não foi liberado pela fonoaudióloga. ' +
+          'Peça a ela para vincular este e-mail na aba Responsáveis.',
       });
     }
 
     const hoje = new Date().toISOString().slice(0, 10);
-    const suspenso = vinculos.find((v) => v.status !== 'ativo');
-    if (suspenso) {
+
+    /*
+     * Regra: o responsável só é barrado se NENHUM dos filhos estiver liberado.
+     * Se um deles foi arquivado ou encerrado, os outros continuam funcionando.
+     */
+    const ativos = vinculos.filter((v) => v.status === 'ativo');
+    const expirados =ativos.filter((v) => v.valido_ate && String(v.valido_ate) < hoje);
+    const liberados =ativos.filter((v) => !v.valido_ate || String(v.valido_ate) >= hoje);
+
+    if (liberados.length) {
+      // Há pelo menos um acesso válido: seguimos.
+    } else if (expirados.length) {
       return res.status(403).json({
         error:
-          suspenso.status === 'encerrado'
-            ? 'Seu acesso foi encerrado. Fale com a fonoaudióloga.'
-            : 'Seu acesso está suspenso temporariamente. Fale com a fonoaudióloga.',
+          'O período de acompanhamento terminou para todas as crianças vinculadas a este acesso. ' +
+          'Fale com a fonoaudióloga.',
       });
-    }
-
-    const vencidos = vinculos.filter((v) => v.valido_ate && String(v.valido_ate) < hoje);
-    if (vencidos.length === vinculos.length) {
+    } else if (vinculos.some((v) => v.status === 'suspenso')) {
       return res.status(403).json({
-        error: 'O período de acompanhamento desta criança terminou. Fale com a fonoaudióloga.',
+        error: 'Seu acesso está suspenso temporariamente. Fale com a fonoaudióloga.',
+      });
+    } else {
+      return res.status(403).json({
+        error: 'Seu acesso foi encerrado. Fale com a fonoaudióloga.',
       });
     }
 

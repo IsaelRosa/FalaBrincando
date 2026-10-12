@@ -22,8 +22,12 @@ patientRouter.get('/', async (req, res) => {
   const rows = await q(
     `SELECT p.id,p.nome,p.apelido,p.birth_date,p.notes_general,
             (SELECT COUNT(*) FROM activity_plans a WHERE a.patient_id=p.id AND a.active=1) AS n_atividades
-     FROM patients p WHERE p.id IN (${ids.map(() => '?').join(',')}) AND p.deleted_at IS NULL`,
-    ids
+     FROM patients p
+     WHERE p.id IN (${ids.map(() => '?').join(',')})
+       AND p.deleted_at IS NULL
+       AND EXISTS (SELECT 1 FROM patient_guardians g
+                   WHERE g.patient_id = p.id AND g.guardian_id = ? AND g.status = 'ativo')`,
+    [...ids, user.id]
   );
   res.json(rows);
 });

@@ -74,19 +74,15 @@ export async function assertPatientAccess(user: AuthUser, patientId: number): Pr
   return ids.includes(Number(patientId));
 }
 
-/**
- * Confere a propriedade do cadastro, **inclusive** quando ele está arquivado.
- * Usado em restaurar/excluir, que precisam funcionar justamente no paciente
- * que já saiu da lista.
- */
 export async function ownsPatient(user: AuthUser, patientId: number): Promise<boolean> {
   if (user.role !== 'fono') {
+    // Responsável só "dona" dos vínculos ativos que tem com o paciente.
     const row = await one<{ n: number }>(
-      `SELECT COUNT(*) AS n FROM patients WHERE id=? AND deleted_at IS NOT NULL`,
-      [patientId]
+      `SELECT COUNT(*) AS n FROM patient_guardians
+       WHERE patient_id=? AND guardian_id=? AND status='ativo'`,
+      [patientId, user.id]
     );
-    // Responsáveis nunca são donos do cadastro; devolvem as próprias linhas.
-    return (await accessiblePatientIds(user)).includes(Number(patientId));
+    return (row?.n ?? 0) > 0;
   }
   const row = await one<{ n: number }>(
     'SELECT COUNT(*) AS n FROM patients WHERE id=? AND owner_fono_id=?',
