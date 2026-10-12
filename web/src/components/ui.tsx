@@ -108,16 +108,47 @@ export function Modal({ onClose, children }: { onClose: () => void; children: Re
   );
 }
 
-/** Emojis para figuras sem imagem cadastrada (materiais próprios da fono). */
+/**
+ * Figuras provisórias enquanto a fonoaudióloga não envia imagens próprias.
+ * A chave é a palavra NORMALIZADA (sem acento, sem espaços), por isso
+ * "guarda-chuva" e "GuardaChuva" caem na mesma figura.
+ */
 export const EMOJI_FALLBACK: Record<string, string> = {
-  sol: '☀️', sapo: '🐸', casa: '🏠', mesa: '🪑', asa: '🪽', passaro: '🐦',
-  arara: '🦜', carro: '🚗', rato: '🐭', girafa: '🦒', cor: '🎨', lua: '🌙',
-  bola: '⚽', leite: '🥛', elefante: '🐘', chave: '🔑', guarda: '🧤', sorvete: '🍦',
-  zebra: '🦓', gelo: '🧊', cozinha: '🍳', tomate: '🍅', uva: '🍇', hospital: '🏥',
-  mala: '🧳', Cardoso: '💌',
+  // animais
+  gato: '🐱', cachorro: '🐶', coelho: '🐰', girafa: '🦒', leao: '🦁', pato: '🦆',
+  cavalo: '🐴', tartaruga: '🐢', sapo: '🐸', panda: '🐼', morcego: '🦇', golfinho: '🐬',
+  peixe: '🐟', passarinho: '🐦', Passarinho: '🐦', zebra: '🦓', raposa: '🦊', arara: '🦜',
+  elefante: '🐘', rato: '🐭', besouro: '🪲', baleia: '🐳', canguru: '🦘', coruja: '🦉',
+  // comida
+  maca: '🍎', banana: '🍌', pao: '🍞', leite: '🥛', ovos: '🥚', arroz: '🍚',
+  melancia: '🍉', cenoura: '🥕', tomate: '🍅', uva: '🍇', cafe: '☕', sorvete: '🍦',
+  fruta: '🍎', biscoito: '🍪', pizza: '🍕',
+  // objetos
+  bola: '⚽', chave: '🔑', guardachuva: '☂️', guarda: '☂️', sapato: '👟', copo: '🥤',
+  caderno: '📓', relogio: '⏰', boneca: '🪆', mala: '🧳', vassoura: '🧹', balde: '🪣',
+  tesoura: '✂️', pente: '🪮', cama: '🛏️', cadeira: '🪑', porta: '🚪', janela: '🪟',
+  mesa: '🪑', casa: '🏡',
+  // natureza e símbolos
+  sol: '☀️', lua: '🌙', estrela: '⭐', chuva: '🌧️', nuvem: '☁️', arvore: '🌳',
+  flor: '🌸', girassol: '🌻', folha: '🍃', gelo: '🧊', pedra: '🪨', montanha: '⛰️',
+  // misc
+  cozinha: '🍳', hospital: '🏥', escola: '🏫', parque: '🏞️', carro: '🚗', onibus: '🚌',
+  bicicleta: '🚲', navio: '⛵',aviao: '✈️', trem: '🚂', livro: '📖', carta: '💌',
+  presente: '🎁', bola_de_gude: '🎈', festa: '🎉', musica: '🎵', nota: '🎶',
+  coracao: '❤️', sol_correndo: '🏃',
 };
 
+/** Remove acentos e caracteres, para casar "ação" com "acao". */
+export function normalizar(word?: string): string {
+  return (word ?? '')
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z]/g, '');
+}
+
+/** Figura para uma palavra. Devolve o texto inicial se não houver imagem. */
 export function emojiFor(word?: string): string {
   if (!word) return '🖼️';
-  return EMOJI_FALLBACK[word.toLowerCase()] ?? '🖼️';
+  return EMOJI_FALLBACK[normalizar(word)] ?? '🖼️';
 }

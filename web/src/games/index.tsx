@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { GameCtx, ActivityPlan } from './GameShell';
 import { JOGOS_NOVOS } from './novos';
 import { speech } from '../lib/speech';
@@ -64,7 +64,7 @@ export function Pontaria({ activity, ctx }: { activity: ActivityPlan; ctx: GameC
 /* ============================================================
    2. JOGO DA MEMÓRIA
    ============================================================ */
-type Card = { id: number; pair: number; emoji: string; word: string; flip: boolean; done: boolean };
+type Card = { uid: string; pair: number; emoji: string; word: string; flip: boolean; done: boolean };
 
 export function Memoria({ activity, ctx }: { activity: ActivityPlan; ctx: GameCtx }) {
   const cfg = activity.config ?? {};
@@ -81,63 +81,116 @@ export function Memoria({ activity, ctx }: { activity: ActivityPlan; ctx: GameCt
     if (lista.length) return lista;
     return (activity.words ?? []).map((w: any) => w.word).filter(Boolean);
   }, [activity, cfg]);
-  const pares = Math.max(1, Math.ceil(palavras.length / 2));
+
   const [cards, setCards] = useState<Card[]>([]);
-  const [sel, setSel] = useState<number[]>([]);
+  const [sel, setSel] = useState<string[]>([]);
   const [acertos, setAcertos] = useState(0);
+  const travado = useRef(false);
+
+  const montar = useCallback(() => {
+    // Até 6 pares cabem bem na grade; evita telas polvilhadas.
+    const base = palavras.slice(0, 6).map((w, i) => ({ pair: i, emoji: emojiFor(w), word: w }));
+    // Cada cópia precisa de um identificador PRÓPRIO (uid único).
+    const lista: Card[] = [
+      ...base.map((c) => ({ ...c, uid: `a${c.pair}-${c.word}`, flip: false, done: false })),
+      ...base.map((c) => ({ ...c, uid: `b${c.pair}-${c.word}`, flip: false, done: false })),
+    ].sort(() => Math.random() - 0.5);
+
+    setCards(lista);
+    setSel([]);
+    setAcertos(0);
+    travado.current = false;
+  }, [palavras]);
 
   useEffect(() => {
-    const base = palavras.slice(0, Math.min(pares, palavras.length)).map((w, i) => ({ pair: i, emoji: emojiFor(w), word: w }));
-    const duplicadas = [...base, ...base].map((c, i) => ({ id: i, ...c, flip: false, done: false }));
-    setCards(duplicadas.sort(() => Math.random() - 0.5));
-  }, [palavras, pares]);
+    if (palavras.length) montar();
+  }, [montar, palavras.length]);
 
-  const clicar = async (i: number) => {
-    if (cards[i].flip || cards[i].done || sel.length === 2) return;
-    const novas = [...cards];
-    novas[i].flip = true;
-    setCards(novas);
-    speech.say(cards[i].word);
-    const selec = [...sel, i];
-    setSel(selec);
-    if (selec.length === 2) {
-      const [a, b] = selec.map((x) => cards[x]);
-      if (a.pair === b.pair) {
-        setTimeout(() => {
-          setCards((cs) => cs.map((c, x) => (x === a.id || x === b.id ? { ...c, done: true, flip: true } : c)));
-          setAcertos((n) => n + 1);
-          setSel([]);
-          ctx.registerAttempt({ ref: a.word, result: 'nao_avaliado' });
-        }, 700);
-      } else {
-        setTimeout(() => {
-          setCards((cs) => cs.map((c, x) => (x === a.id || x === b.id ? { ...c, flip: false } : c)));
-          setSel([]);
-        }, 1100);
-      }
+  const clicar = async (uid: string) => {
+    if (travado.current) return;
+    const carta = cards.find((c) => c.uid === uid);
+    if (!carta || carta.flip || carta.done || sel.length === 2) return;
+
+    // Objeto novo, sem mutação: o React consegue detectar a mudança.
+    setCards((cs) => cs.map((c) => (c.uid === uid ? { ...c, flip: true } : c)));
+    speech.say(carta.word);
+
+    const selecionadas = [...sel, uid];
+    setSel(selecionadas);
+
+    if (selecionadas.length < 2) return;
+
+    travado.current = true;
+    const [aUid, bUid] = selecionadas;
+    const [a, b] = [cards.find((c) => c.uid === aUid), cards.find((c) => c.uid === bUid)];
+
+    if (a && b && a.pair === b.pair) {
+      window.setTimeout(() => {
+        setCards((cs) =>
+          cs.map((c) => (c.uid === aUid || c.uid === bUid ? { ...c, done: true, flip: true } : c))
+        );
+        setAcertos((n) => n + 1);
+        setSel([]);
+        travado.current = false;
+        ctx.registerAttempt({ ref: a.word, result: 'nao_avaliado' });
+      }, 800);
+    } else {
+      // Errou: as DUAS cartas voltam para baixo.
+      window.setTimeout(() => {
+        setCards((cs) =>
+          cs.map((c) => (c.uid === aUid || c.uid === bUid ? { ...c, flip: false } : c))
+        );
+        setSel([]);
+        travado.current = false;
+      }, 1300);
     }
   };
 
-  const total = palavras.length;
+  const totalPares = Math.min(palavras.length, 6);
+
+  if (!palavras.length)
+    return (
+      <div className="alert info">
+        Esta atividade ainda não tem palavras cadastradas. A fonoaudióloga define as figuras no painel dela.
+      </div>
+    );
+
   return (
     <>
       <h2 className="center">🃏 Jogo da Memória</h2>
-      <p className="center muted">Ache os pares. Diga o nome em voz alta ao revelar.</p>
+      <p className="center muted">
+        Ache os pares e diga o nome em voz alta. Pares encontrados: {acertos}/{totalPares}
+      </p>
+
       <div className="memoria-grid" style={{ marginTop: '1rem' }}>
-        {cards.map((c, i) => (
+        {cards.map((c) => (
           <button
-            key={c.id}
+            key={c.uid}
             className="carta"
             data-flip={c.flip ? '1' : '0'}
             data-done={c.done ? '1' : '0'}
-            onClick={() => clicar(i)}
+            onClick={() => clicar(c.uid)}
             aria-label={c.flip ? c.word : 'Carta virada'}
           >
-            {c.flip ? c.emoji : '❓'}
+            {c.flip ? (
+              <>
+                <span className="carta-emoji">{c.emoji}</span>
+                <small className="carta-word">{c.word}</small>
+              </>
+            ) : (
+              '❓'
+            )}
           </button>
         ))}
       </div>
-      {acertos === total && total > 0 && <p className="center stars">⭐⭐⭐</p>}
+
+      {acertos === totalPares && totalPares > 0 && (
+        <div className="center" style={{ marginTop: '1rem' }}>
+          <p className="stars">⭐⭐⭐</p>
+          <p>Você encontrou todos os pares!</p>
+          <button className="btn" onClick={montar}>Jogar de novo</button>
+        </div>
+      )}
     </>
   );
 }
