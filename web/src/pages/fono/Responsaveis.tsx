@@ -103,7 +103,10 @@ export function Responsaveis({ patientId }: { patientId: number }) {
               <label>Senha (opcional)</label>
               <input value={senha} onChange={(e) => setSenha(e.target.value)}
                 placeholder="Deixe vazio para gerar uma sugestão" />
-              <span className="hint">Se você definir, essa senha passa a valer no login.</span>
+              <span className="hint">
+                Escreva a senha <strong>em texto</strong> (ex.: <code>Isa2026@40</code>).
+                Não cole o hash do banco. Se você definir, ela passa a ser a única aceita.
+              </span>
             </div>
             <div className="field">
               <label>Acesso até</label>
@@ -147,12 +150,14 @@ export function Responsaveis({ patientId }: { patientId: number }) {
                 )}
                 <input type="date" defaultValue={g.valido_ate ?? ''} style={{ maxWidth: 160 }}
                   onBlur={(e) => e.target.value && acao(g.id, { valido_ate: e.target.value })} />
-                <button className="btn small ghost" onClick={async () => {
-                  const nova = prompt('Nova senha para este responsável:');
-                  if (!nova) return;
-                  await acao(g.id, { senha: nova });
-                  alert('Senha atualizada. Anote e informe ao responsável.');
-                }}>Trocar senha</button>
+                <button className="btn small green" onClick={async () => {
+                  if (!confirm('Gerar uma nova senha para este responsável? A senha atual deixa de funcionar.')) return;
+                  try {
+                    const r = await api<{ senha: string }>(`/guardians/${patientId}/${g.id}/gerar-senha`, { method: 'POST' });
+                    setSenhaGerada({ email: g.email, senha: r.senha });
+                    carregar();
+                  } catch (e: any) { setMsg(e.message); }
+                }}>🔑 Gerar senha</button>
                 <button className="btn small ghost" onClick={async () => {
                   if (!confirm('Remover o vínculo deste responsável?')) return;
                   await api(`/guardians/${patientId}/${g.id}`, { method: 'DELETE' });

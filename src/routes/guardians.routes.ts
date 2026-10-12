@@ -48,6 +48,9 @@ guardianRouter.get('/:patientId', async (req, res) => {
  * Cria (ou reutiliza) a conta do responsável e define o acesso:
  * senha sugerida pela fonoaudióloga e período de validade.
  * --------------------------------------------------------------- */
+/** Impede que alguém cole um hash de senha no campo de senha. */
+const pareceHash = (v: string) => /^\$2[aby]?\$\d{2}\$/.test(v.trim());
+
 const criarSchema = z.object({
   email: z.string().email('E-mail inválido'),
   nome: z.string().min(2, 'Informe o nome do responsável').optional(),
@@ -72,6 +75,13 @@ guardianRouter.post('/:patientId', requireRole('fono'), async (req, res) => {
 
   if (d.valido_de && d.valido_ate && d.valido_ate < d.valido_de)
     return res.status(400).json({ error: 'A data final é anterior à inicial.' });
+
+  if (d.senha && pareceHash(d.senha))
+    return res.status(400).json({
+      error:
+        'Esse campo quer a SENHA em texto, não o hash do banco. ' +
+        'Deixe em branco para o sistema sugerir uma senha.',
+    });
 
   // Conta existente? reaproveita; senão cria.
   let conta = await one<any>('SELECT id, display_name FROM users WHERE email=?', [email]);
@@ -142,6 +152,13 @@ guardianRouter.patch('/:patientId/:id', requireRole('fono'), async (req, res) =>
   if (!parsed.success) return res.status(400).json({ error: parsed.error.issues[0].message });
   const d = parsed.data;
 
+  if (d.senha && pareceHash(d.senha))
+    return res.status(400).json({
+      error:
+        'Informe a senha em texto, não o hash do banco. ' +
+        'Use «Gerar senha» para receber uma senha que você pode repassar.',
+    });
+
   const senhaHash = d.senha ? await bcrypt.hash(d.senha, 10) : null;
 
   const r = await run(
@@ -156,6 +173,36 @@ guardianRouter.patch('/:patientId/:id', requireRole('fono'), async (req, res) =>
   );
   if (!r.affectedRows) return res.status(404).json({ error: 'Vínculo não encontrado.' });
   res.json({ ok: true });
+});
+
+/**
+ * Gera uma senha conhecida e a devolve uma única vez.
+ * Use quando o responsável não consegue entrar — sem precisar de terminal.
+ */
+guardianRouter.post('/:patientId/:id/gerar-senha', requireRole('fono'), async (req, res) => {
+  const user = req.user as AuthUser;
+  const patientId = Number(req.params.patientId);
+  if (!(await assertPatientAccess(user, patientId)))
+    return res.status(403).json({ error: 'Sem acesso ao paciente.' });
+
+  const vinculo = await one<any>(
+    `SELECT u.email, u.display_name, g.senha_hash
+     FROM patient_guardians g JOIN users u ON u.id=g.guardian_id
+     WHERE g.id=? AND g.patient_id=?`,
+    [req.params.id, patientId]
+  );
+  if (!vinculo) return res.status(404).json({ error: 'Vínculo não encontrado.' });
+
+  const senha = sugerirSenha(vinculo.display_name ?? vinculo.email);
+  await run('UPDATE patient_guardians SET senha_hash=?, status=? WHERE id=?', [
+    await bcrypt.hash(senha, 10), 'ativo', req.params.id,
+  ]);
+
+  res.json({
+    ok: true,
+    senha,
+    aviso: 'Senha exibida uma única vez. Anote e envie ao responsável por canal seguro.',
+  });
 });
 
 /** Remove o acesso (não apaga a conta). */
