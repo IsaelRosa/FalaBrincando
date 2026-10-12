@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { api } from '../../lib/api';
 import { Mascote } from '../../components/ui';
+import { ExcluirPaciente } from './ExcluirPaciente';
 
 interface Phoneme { id: number; symbol: string; name: string; is_global: boolean; words?: any[] }
 interface Stage { id: number; stage_key: string; status: string; ordem_custom: number | null; advancement_criteria: string | null; stage_nome: string; ordem: number; cor: string; symbol: string; fono_decision: string | null }
@@ -13,6 +14,7 @@ export function PacienteDetalhe() {
   const [phonemes, setPhonemes] = useState<Phoneme[]>([]);
   const [catalog, setCatalog] = useState<any>(null);
   const [msg, setMsg] = useState('');
+  const [excluir, setExcluir] = useState(false);
   const [erro, setErro] = useState('');
 
   const load = () => api(`/patients/${patientId}`).then(setData).catch((e) => setErro(e.message));
@@ -55,6 +57,8 @@ export function PacienteDetalhe() {
           <Link className="btn ghost" to={`/fono/acompanhamento/${patientId}`}>📈 Acompanhamento</Link>
           <Link className="btn ghost" to={`/fono/gravacoes/${patientId}`}>🎙️ Gravações</Link>
           <Link className="btn ghost" to={`/fono/responsaveis/${patientId}`}>👪 Responsáveis</Link>
+          <button className="btn ghost" style={{ color: '#96263c', borderColor: '#ffc2cc' }}
+            onClick={() => setExcluir(true)}>🗑️</button>
           <Link className="btn ghost" to={`/fono/relatorios/${patientId}`}>📊 Relatório</Link>
         </div>
       </div>
@@ -196,6 +200,13 @@ export function PacienteDetalhe() {
             }}>Registrar</button>
         </div>
       </div>
+
+      {excluir && (
+        <ExcluirPaciente
+          patient={data.patient}
+          onFim={() => setExcluir(false)}
+        />
+      )}
     </>
   );
 }

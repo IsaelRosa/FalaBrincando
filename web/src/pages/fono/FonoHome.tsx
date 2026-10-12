@@ -7,8 +7,13 @@ export function FonoHome() {
   const [patients, setPatients] = useState<any[]>([]);
   const [note, setNote] = useState('');
   const [erro, setErro] = useState('');
+  const [arquivados, setArquivados] = useState<any[]>([]);
+  const [verArquivados, setVerArquivados] = useState(false);
 
-  const load = () => api<any[]>('/patients').then(setPatients).catch((e) => setErro(e.message));
+  const load = () => {
+    api<any[]>('/patients').then(setPatients).catch((e) => setErro(e.message));
+    api<any[]>('/patients/arquivados/lista').then(setArquivados).catch(() => {});
+  };
   useEffect(() => { load(); }, []);
 
   const add = async (e: React.FormEvent) => {
@@ -56,7 +61,32 @@ export function FonoHome() {
       </div>
 
       <div className="card">
-        <h3>👧 Pacientes autorizados</h3>
+        <div className="row between">
+          <h3>👧 Pacientes autorizados</h3>
+          {arquivados.length > 0 && (
+            <button className="btn ghost small" onClick={() => setVerArquivados(!verArquivados)}>
+              🗂️ Arquivados ({arquivados.length})
+            </button>
+          )}
+        </div>
+
+        {verArquivados && (
+          <div className="alert info">
+            <strong>Pacientes arquivados</strong>
+            <div className="muted" style={{ margin: '.3rem 0 .6rem' }}>
+              Tirados do painel, mas com todos os dados guardados.
+            </div>
+            {arquivados.map((p) => (
+              <div key={p.id} className="row between" style={{ padding: '.3rem 0' }}>
+                <span>{p.apelido || p.nome}</span>
+                <button className="btn small" onClick={async () => {
+                  await api(`/patients/${p.id}/restaurar`, { method: 'POST' });
+                  load();
+                }}>♻️ Restaurar</button>
+              </div>
+            ))}
+          </div>
+        )}
         {patients.length === 0 ? (
           <div className="empty">
             <div className="big">📋</div>

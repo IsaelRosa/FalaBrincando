@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { z } from 'zod';
 import { q, one, run } from '../db.js';
-import { requireAuth, requireRole, assertPatientAccess, accessiblePatientIds, type AuthUser } from '../auth.js';
+import { requireAuth, requireRole, assertPatientAccess, accessiblePatientIds, ownsPatient, type AuthUser } from '../auth.js';
 
 export const patientRouter = Router();
 patientRouter.use(requireAuth);
@@ -275,13 +275,117 @@ patientRouter.get('/:id/notes', async (req, res) => {
   res.json(rows);
 });
 
-// ---------- LGPD: exclusão ----------
+// ---------- Exclusão ----------
+/**
+ * Mostra o que será removido, para a fonoaudióloga decidir com consciência.
+ */
+patientRouter.get('/:id/resumo-exclusao', requireRole('fono'), async (req, res) => {
+  const user = req.user as AuthUser;
+  const id = Number(req.params.id);
+  if (!(await ownsPatient(user, id)))
+    return res.status(403).json({ error: 'Sem acesso ao paciente.' });
+
+  const [atividades, sessoes, tentativas, notas, gravacoes, vinculos] = await Promise.all([
+    one<{ n: number }>('SELECT COUNT(*) n FROM activity_plans WHERE patient_id=?', [id]),
+    one<{ n: number }>('SELECT COUNT(*) n FROM activity_sessions WHERE patient_id=?', [id]),
+    one<{ n: number }>(
+      `SELECT COUNT(*) n FROM attempts a JOIN activity_sessions s ON s.id=a.session_id WHERE s.patient_id=?`,
+      [id]
+    ),
+    one<{ n: number }>('SELECT COUNT(*) n FROM clinical_notes WHERE patient_id=?', [id]),
+    one<{ n: number }>('SELECT COUNT(*) n FROM recordings WHERE patient_id=?', [id]),
+    one<{ n: number }>('SELECT COUNT(*) n FROM patient_guardians WHERE patient_id=?', [id]),
+  ]);
+
+  res.json({
+    atividades: atividades?.n ?? 0,
+    sessoes: sessoes?.n ?? 0,
+    tentativas: tentativas?.n ?? 0,
+    notas_clinicas: notas?.n ?? 0,
+    gravacoes_de_voz: gravacoes?.n ?? 0,
+    responsaveis: vinculos?.n ?? 0,
+    ja_arquivado: !!(await one<any>('SELECT deleted_at FROM patients WHERE id=?', [id]))?.deleted_at,
+  });
+});
+
+/**
+ * Remove o paciente do painel.
+ *   ?modo=arquivar → some do painel, mantém os dados (recomendado)
+ *   ?modo=excluir  → apaga tudo em cascata (definitivo)
+ */
 patientRouter.delete('/:id', requireRole('fono'), async (req, res) => {
   const user = req.user as AuthUser;
-  if (!(await assertPatientAccess(user, Number(req.params.id))))
+  const id = Number(req.params.id);
+  const modo = String(req.query.modo ?? 'arquivar');
+
+  if (!(await ownsPatient(user, id)))
     return res.status(403).json({ error: 'Sem acesso ao paciente.' });
-  await run('UPDATE patients SET deleted_at=NOW() WHERE id=? AND owner_fono_id=?', [
-    req.params.id, user.id,
+
+  const alvo = await one<any>('SELECT nome, apelido FROM patients WHERE id=? AND owner_fono_id=?', [
+    id, user.id,
   ]);
-  res.json({ ok: true, msg: 'Dados ocultados. Exclusão definitiva requer solicitação formal.' });
+  if (!alvo) return res.status(404).json({ error: 'Paciente não encontrado.' });
+
+  if (req.body?.confirmar !== alvo.nome && req.body?.nome !== alvo.nome) {
+    return res.status(400).json({
+      error: 'Digite o nome do paciente exatamente como está para confirmar.',
+    });
+  }
+
+  if (modo === 'arquivar') {
+    await run('UPDATE patients SET deleted_at=NOW() WHERE id=? AND owner_fono_id=?', [id, user.id]);
+    // O responsável perde o acesso imediatamente.
+    await run('UPDATE patient_guardians SET status=\'encerrado\' WHERE patient_id=?', [id]);
+    return res.json({
+      ok: true,
+      modo: 'arquivar',
+      msg: `${alvo.apelido || alvo.nome} foi arquivado e saiu do painel. Os dados continuam guardados.`,
+    });
+  }
+
+  if (modo === 'excluir') {
+    // Arquivos de voz ficam no disco: removemos junto.
+    const arquivos = await q<any>('SELECT file_path FROM recordings WHERE patient_id=?', [id]);
+    await run('DELETE FROM patients WHERE id=? AND owner_fono_id=?', [id, user.id]);
+
+    // Limpeza de arquivos órfãos (fora da transação).
+    const fs = await import('node:fs');
+    for (const a of arquivos as any[]) {
+      try {
+        if (a.file_path && fs.existsSync(a.file_path)) fs.unlinkSync(a.file_path);
+      } catch {
+        /* arquivo já removido */
+      }
+    }
+
+    return res.json({
+      ok: true,
+      modo: 'excluir',
+      msg: `${alvo.apelido || alvo.nome} e todos os registros foram excluídos definitivamente.`,
+    });
+  }
+
+  res.status(400).json({ error: 'Modo inválido. Use "arquivar" ou "excluir".' });
+});
+
+/** Traz um paciente arquivado de volta. */
+patientRouter.post('/:id/restaurar', requireRole('fono'), async (req, res) => {
+  const user = req.user as AuthUser;
+  const id = Number(req.params.id);
+  if (!(await ownsPatient(user, id)))
+    return res.status(403).json({ error: 'Sem acesso ao paciente.' });
+  await run('UPDATE patients SET deleted_at=NULL WHERE id=? AND owner_fono_id=?', [id, user.id]);
+  await run('UPDATE patient_guardians SET status=\'ativo\' WHERE patient_id=?', [id]);
+  res.json({ ok: true, msg: 'Paciente restaurado. Revise o acesso dos responsáveis.' });
+});
+
+/** Lista os arquivados, para não sumirem do controle. */
+patientRouter.get('/arquivados/lista', requireRole('fono'), async (req, res) => {
+  const user = req.user as AuthUser;
+  const rows = await q(
+    `SELECT id, nome, apelido, deleted_at FROM patients
+     WHERE owner_fono_id=? AND deleted_at IS NOT NULL ORDER BY deleted_at DESC`,
+    [user.id]
+  );
+  res.json(rows);
 });
