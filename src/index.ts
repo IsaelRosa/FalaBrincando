@@ -24,8 +24,9 @@ app.use(express.json({ limit: '5mb' }));
  * Evita descobrir o problema só quando uma tela quebra.
  */
 const REQUERIDOS: Record<string, string[]> = {
-  patients: ['id','nome','owner_fono_id','avatar','metas','necessidades','preferencias',
-             'acessibilidade','tipo_comunicacao','lembrete_ativo','tratamento_inicio'],
+  patients: ['id','nome','owner_fono_id','avatar','avatar_url','metas','necessidades','preferencias',
+             'acessibilidade','observacoes_resp','tipo_comunicacao','lembrete_ativo','lembrete_hora',
+             'lembrete_dias','lembrete_texto','tratamento_inicio','deleted_at'],
   activity_plans: ['id','patient_id','game_key','habilidade','objetivo','passos','nivel','library_id'],
   activity_library: ['id','game_key','title','habilidade','idade_min','nivel','status'],
   patient_guardians: ['patient_id','guardian_id','senha_hash','status','valido_ate'],

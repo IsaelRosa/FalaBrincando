@@ -13,6 +13,7 @@ const COLUNAS = {
   patients: [
     // Sem DEFAULT com emoji: pode quebrar conforme o charset do importador.
     ['avatar', "VARCHAR(80) DEFAULT 'Fuba' NULL"],
+    ['avatar_url', 'VARCHAR(400) NULL'],
     ['tipo_comunicacao', "VARCHAR(40) DEFAULT 'oral' NULL"],
     ['necessidades', 'JSON NULL'],
     ['preferencias', 'JSON NULL'],

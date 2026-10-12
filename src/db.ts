@@ -39,6 +39,12 @@ export function friendlyDbError(err: any): string {
   if (code === 'ECONNRESET' || code === 'PROTOCOL_CONNECTION_LOST')
     return 'A conexão com o MySQL caiu. Verifique se o banco está ativo no hPanel.';
 
+  if (code === 'ER_BAD_FIELD_ERROR') {
+    const col = String(err.sqlMessage ?? '').match(/Unknown column '([^']+)'/)?.[1];
+    return `O banco está desatualizado (falta a coluna ${col ?? 'necessária'}). ` +
+      'Importe db/atualizacao.sql pelo phpMyAdmin e recarregue a página.';
+  }
+
   if (code?.startsWith?.('ER_NO_SUCH_TABLE'))
     return 'Falta alguma tabela no banco. Importe db/schema.hostinger.sql pelo phpMyAdmin.';
 
