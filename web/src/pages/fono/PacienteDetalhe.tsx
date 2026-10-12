@@ -239,7 +239,7 @@ function AddStageForm({ patientId, phonemes, stages, onSaved }: any) {
         <select value={st} onChange={(e) => setSt(e.target.value)}>
           <option value="">Etapa…</option>
           {stages.map((s: any) => (
-            <option key={s.key} value={s.key}>{s.ordem}. {s.nome}</option>
+            <option key={s.slug} value={s.slug}>{s.ordem}. {s.nome}</option>
           ))}
         </select>
         <input placeholder="Critério clínico (opcional)" value={crit} onChange={(e) => setCrit(e.target.value)} />
@@ -272,9 +272,9 @@ function AddActivityForm({ patientId, phonemes, catalog, onSaved }: any) {
       <div className="grid cols-3">
         <div className="field">
           <label>Jogo</label>
-          <select value={game} onChange={(e) => { setGame(e.target.value); setTitle((catalog?.games ?? []).find((g: any) => g.key === e.target.value)?.nome ?? ''); }}>
+          <select value={game} onChange={(e) => { setGame(e.target.value); setTitle((catalog?.games ?? []).find((g: any) => g.slug === e.target.value)?.nome ?? ''); }}>
             <option value="">Selecione…</option>
-            {(catalog?.games ?? []).map((g: any) => <option key={g.key} value={g.key}>{g.nome}</option>)}
+            {(catalog?.games ?? []).map((g: any) => <option key={g.slug} value={g.slug}>{g.nome}</option>)}
           </select>
         </div>
         <div className="field">
@@ -292,7 +292,7 @@ function AddActivityForm({ patientId, phonemes, catalog, onSaved }: any) {
           <label>Etapa</label>
           <select value={stage} onChange={(e) => setStage(e.target.value)}>
             <option value="">—</option>
-            {(catalog?.stages ?? []).map((s: any) => <option key={s.key} value={s.key}>{s.nome}</option>)}
+            {(catalog?.stages ?? []).map((s: any) => <option key={s.slug} value={s.slug}>{s.nome}</option>)}
           </select>
         </div>
         <div className="field">
@@ -318,6 +318,14 @@ function AddActivityForm({ patientId, phonemes, catalog, onSaved }: any) {
         onClick={async () => {
           let parsed: any = {};
           try { parsed = JSON.parse(cfg); } catch { alert('JSON inválido na configuração.'); return; }
+
+          // Trava de segurança: a chave precisa existir no catálogo de jogos.
+          const validos = (catalog?.games ?? []).map((g: any) => g.slug);
+          if (!validos.includes(game)) {
+            alert('Jogo inválido. Escolha um jogo na lista.');
+            return;
+          }
+
           await api(`/patients/${patientId}/activities`, {
             method: 'POST',
             body: {

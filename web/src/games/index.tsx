@@ -429,9 +429,16 @@ export function GameHost({ activity, ctx }: { activity: ActivityPlan; ctx: GameC
   const G = GAME_REGISTRY[activity.game_key];
   if (!G) {
     return (
-      <div className="alert warn">
-        Jogo <strong>{activity.game_key}</strong> ainda não implementado nesta versão. A fonoaudióloga
-        pode defini-lo no painel dela.
+      <div className="alert error">
+        <strong>Não foi possível abrir esta atividade.</strong>
+        <p style={{ margin: '.5rem 0' }}>
+          O jogo gravado como <code>{activity.game_key}</code> não existe no sistema.
+        </p>
+        <p className="muted" style={{ margin: 0 }}>
+          Isso costuma acontecer quando a atividade foi criada antes de uma atualização do catálogo.
+          Peça para a fonoaudióloga recriar a atividade pela biblioteca, ou rode o arquivo
+          <code> db/corrigir-game-keys.sql</code> no banco.
+        </p>
       </div>
     );
   }
