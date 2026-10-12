@@ -28,7 +28,12 @@ const ok = (msg: string) => { console.log(`✅ ${msg}`); };
 const falha = (msg: string) => { console.log(`❌ ${msg}`); falhas++; };
 
 // 1) O App inteiro não pode quebrar em nenhuma rota
-const rotas = ['/', '/criar-conta', '/entrar', '/inicio', '/fono', '/fono/biblioteca', '/jogo/1'];
+const rotas = [
+  '/', '/criar-conta', '/entrar', '/inicio',
+  '/fono', '/fono/pacientes', '/fono/pacientes/1', '/fono/pacientes/1/perfil',
+  '/fono/biblioteca', '/fono/fonemas', '/fono/relatorios', '/fono/acompanhamento/1',
+  '/historico', '/acompanhamento/1', '/jogo/1',
+];
 for (const rota of rotas) {
   try {
     irPara(rota);

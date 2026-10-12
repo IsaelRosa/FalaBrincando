@@ -4,6 +4,7 @@ import { Layout } from './pages/Layout';
 import { Login } from './pages/Login';
 import { Landing } from './pages/Landing';
 import { CriarConta } from './pages/CriarConta';
+import { PacientesLista } from './pages/fono/PacientesLista';
 import { FonoHome } from './pages/fono/FonoHome';
 import { PacienteDetalhe } from './pages/fono/PacienteDetalhe';
 import { Fonemas } from './pages/fono/Fonemas';
@@ -21,7 +22,13 @@ function Guard({ children, role }: { children: React.ReactNode; role?: 'fono' | 
   const { user, loading } = useAuth();
   if (loading) return <p className="container">Carregando…</p>;
   if (!user) return <Navigate to="/entrar" replace />;
-  if (role && user.role !== role) return <Navigate to="/inicio" replace />;
+
+  // Cada perfil tem sua casa: a fono nunca cai na tela da criança.
+  if (role && user.role !== role) {
+    return <Navigate to={user.role === 'fono' ? '/fono' : '/inicio'} replace />;
+  }
+  if (!role && user.role === 'fono') return <Navigate to="/fono" replace />;
+
   return <>{children}</>;
 }
 
@@ -73,7 +80,12 @@ function Rotas() {
       <Route path="/criar-conta" element={<CriarConta />} />
 
       {/* Página inicial pública — quem já entrou vai direto para o app */}
-      <Route path="/" element={user ? <Navigate to="/inicio" replace /> : <Landing />} />
+      <Route
+          path="/"
+          element={
+            !user ? <Landing /> : <Navigate to={user.role === 'fono' ? '/fono' : '/inicio'} replace />
+          }
+        />
 
       {/* Painel do responsável / tela da criança */}
       <Route path="/inicio" element={<Guard><HomeResponsavel /></Guard>} />
@@ -84,6 +96,7 @@ function Rotas() {
       {/* Painel profissional */}
       <Route element={<Guard role="fono"><Layout /></Guard>}>
         <Route path="/fono" element={<FonoHome />} />
+        <Route path="/fono/pacientes" element={<PacientesLista />} />
         <Route path="/fono/pacientes/:id" element={<PacienteDetalhe />} />
         <Route path="/fono/pacientes/:id/perfil" element={<Perfil />} />
         <Route path="/fono/biblioteca" element={<Biblioteca />} />
