@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { api } from '../../lib/api';
-import { invalidaIndiceFiguras } from '../../components/figuras';
+import { invalidaIndiceMidias } from '../../lib/midias';
 
 const RIGHTS_LABEL: Record<string, string> = {
   proprio: 'Material próprio',
@@ -27,7 +27,7 @@ export function Materiais() {
     try {
       const r = await api<{ msg: string }>('/materials', { method: 'POST', form });
       setMsg(r.msg);
-      invalidaIndiceFiguras();
+      invalidaIndiceMidias();
       (document.getElementById('arq') as HTMLInputElement).value = '';
       load();
     } catch (e: any) { setErro(e.message); }

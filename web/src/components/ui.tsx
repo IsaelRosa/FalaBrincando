@@ -1,5 +1,6 @@
 import { useEffect, useState, type ReactNode } from 'react';
 import { speech, prefersReducedMotion } from '../lib/speech';
+import { useAudioDaPalavra } from '../lib/midias';
 
 /** Mascote original — "Fubá", o passarinho que acompanha as missões. */
 export function Mascote({ mood = 'feliz', size = 64 }: { mood?: 'feliz' | 'pensativo' | 'comemorando'; size?: number }) {
@@ -76,12 +77,15 @@ export function SettingsBar() {
 /** Botão que fala e oferece o áudio enviado pela fonoaudióloga. */
 export function AudioButton({ word, audioSrc }: { word: string; audioSrc?: string | null }) {
   const [tocando, setTocando] = useState(false);
+  // Se a fono enviou áudio da palavra, ele tem preferência sobre a voz do navegador.
+  const gravado = useAudioDaPalavra(word);
+  const fonte = audioSrc ?? gravado;
   return (
     <button
       className="btn sun"
       onClick={() => {
-        if (audioSrc) {
-          speech.play(audioSrc);
+        if (fonte) {
+          speech.play(fonte);
           setTocando(true);
           setTimeout(() => setTocando(false), 1200);
         } else {

@@ -15,7 +15,8 @@
     "db:check": "tsx scripts/check-db.ts",
     "db:users": "tsx scripts/setup-users.ts",
     "db:migrate": "tsx scripts/migrate.ts",
-    "db:palavras": "tsx scripts/palavras.ts"
+    "db:palavras": "tsx scripts/palavras.ts",
+    "db:guia": "tsx scripts/guia-materiais.ts"
   },
   "dependencies": {
     "bcryptjs": "^3.0.2",

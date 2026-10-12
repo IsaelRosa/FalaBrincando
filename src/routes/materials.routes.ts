@@ -194,7 +194,19 @@ materialRouter.get('/arquivo/:id', requireAuth, async (req, res) => {
     if (!vinculo || !vinculo.n) return res.status(403).end();
   }
 
-  res.type(m.mime_type ?? 'application/octet-stream');
+  // Alguns navegadores não gravam o tipo certo; conferimos pela extensão.
+  const MIME: Record<string, string> = {
+    '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.webp': 'image/webp',
+    '.gif': 'image/gif', '.svg': 'image/svg+xml',
+    '.mp3': 'audio/mpeg', '.m4a': 'audio/mp4', '.wav': 'audio/wav', '.ogg': 'audio/ogg',
+    '.mp4': 'video/mp4', '.webm': 'video/webm', '.pdf': 'application/pdf',
+  };
+  const ext = path.extname(m.file_path).toLowerCase();
+  const tipo = (m.mime_type && m.mime_type !== 'application/octet-stream' ? m.mime_type : null)
+    ?? MIME[ext]
+    ?? 'application/octet-stream';
+
+  res.type(tipo);
   res.setHeader('Cache-Control', 'private, max-age=86400');
   res.sendFile(path.resolve(m.file_path));
 });
